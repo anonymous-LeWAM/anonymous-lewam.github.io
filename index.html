@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="LeWAM: JEPA Can Be Succinct for Realistic Control. One joint predictor learns latent futures and executable action continuations end-to-end.">
+  <title>LeWAM: JEPA Can Be Succinct for Realistic Control</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/computer-modern/cmu-serif.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    :root {
+      --ink: #363636;
+      --body: #4a4a4a;
+      --muted: #8c8e90;
+      --link: #226999;
+      --surface: #f8f8f8;
+      --rule: #dddddd;
+      --paper-blue: #163f63;
+      --paper-green: #276947;
+      --paper-orange: #a85e00;
+      --max-width: 960px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--body);
+      background: #fff;
+      font-family: "CMU Serif", "Computer Modern Serif", Georgia, serif;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    a { color: var(--link); }
+    img, video { max-width: 100%; }
+    button, input, select { font: inherit; }
+    .container { width: min(var(--max-width), calc(100% - 48px)); margin: 0 auto; }
+    .narrow { width: min(680px, 100%); margin-inline: auto; }
+    .section { padding: .5rem 0 3rem; }
+    .section + .section { padding-top: .5rem; }
+    .content p { margin: 0 0 1rem; line-height: 1.7; text-align: justify; }
+    .content strong { color: var(--ink); }
+
+    .publication-header { padding: 3rem 0 .5rem; text-align: center; }
+    .publication-title {
+      margin: 0;
+      color: var(--ink);
+      font-family: "CMU Serif", "Computer Modern Serif", Georgia, serif;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+    .publication-title.is-1 { font-size: clamp(2.65rem, 5.4vw, 3rem); margin-bottom: 1.5rem; }
+    .publication-title.is-2 { font-size: clamp(2rem, 4.3vw, 2.5rem); margin-bottom: 1.5rem; }
+    .publication-authors { font-size: 1.2rem; font-weight: 400; }
+    .author-block { display: inline-block; }
+    .publication-authors a { font-weight: 400; text-decoration: none; }
+    .publication-authors a:hover { text-decoration: underline; }
+    .publication-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; margin-top: 1.1rem; }
+    .paper-button {
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+      padding: .55em 1.2em;
+      border: 0;
+      border-radius: 8px;
+      color: var(--muted);
+      background: var(--surface);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .88rem;
+      font-weight: 400;
+      letter-spacing: .03em;
+      line-height: 1.5;
+      text-decoration: none;
+      transition: background-color .15s ease;
+    }
+    .paper-button:hover { color: var(--muted); background: #eeeeee; }
+    .paper-button[aria-disabled="true"] { opacity: .62; cursor: default; }
+    .paper-button:focus-visible, video:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+
+    .teaser { padding: 1.25rem 0 3rem; }
+    .media-frame {
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid #bbbbbb;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .media-frame img { display: block; width: 100%; height: auto; }
+    .teaser .media-frame { border-color: #c8c8c8; }
+
+    h2.section-title {
+      margin: 0 0 1.25rem;
+      color: var(--ink);
+      font-family: "CMU Serif", "Computer Modern Serif", Georgia, serif;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.15;
+      text-align: center;
+    }
+    h3.subsection-title {
+      margin: 2rem 0 .8rem;
+      color: var(--ink);
+      font-family: "CMU Serif", "Computer Modern Serif", Georgia, serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .abstract-box {
+      width: min(680px, 100%);
+      margin: 0 auto;
+      padding: 2rem 2.5rem;
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .abstract-box p:last-child { margin-bottom: 0; }
+    .tldr { margin-top: 1.15rem !important; }
+
+    .formula {
+      margin: 1.5rem 0;
+      padding: 1.3rem 1.5rem;
+      overflow-x: auto;
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 1.08rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .figure { margin: 1.6rem 0 2rem; }
+    .figure > img { display: block; width: 100%; height: auto; }
+    .figure-caption {
+      width: min(820px, 100%);
+      margin: .75rem auto 0;
+      color: #666;
+      font-size: .92rem;
+      line-height: 1.55;
+      text-align: left;
+    }
+    .figure-caption strong { color: var(--ink); }
+    .figure.compact { width: min(780px, 100%); margin-inline: auto; }
+
+    .comparison-strip { margin: 1.6rem 0; }
+    .comparison-strip img { display: block; width: 100%; }
+    .result-note {
+      margin: 1rem 0 1.5rem;
+      padding: .8rem 1rem;
+      border-left: 3px solid #c9ced3;
+      color: #6d7175;
+      background: #fafafa;
+      font-size: .9rem;
+      line-height: 1.55;
+    }
+
+    /* WorldForge8 is the website's one signature moment: the exact paper figure
+       structure, with each static 224x224 observation replaced by its trajectory. */
+    .wf8-figure { margin: 1.6rem auto 2rem; font-family: Arial, Helvetica, sans-serif; }
+    .wf8-layout { display: flex; flex-direction: column; align-items: center; gap: 1.05rem; }
+    .wf8-grid { display: grid; width: min(100%, 54rem); grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: .9rem; row-gap: 1.35rem; }
+    .wf8-tile { min-width: 0; text-align: center; }
+    .wf8-video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border: 1px solid #d9dde1;
+      border-radius: 9px;
+      background: #fff;
+      box-shadow: 0 1px 5px rgba(30, 35, 40, .04);
+    }
+    .wf8-name { display: block; margin-top: .38rem; color: #202124; font-size: .88rem; font-weight: 700; line-height: 1.15; }
+    .wf8-caps { min-height: 1.25rem; display: flex; justify-content: center; gap: .22rem; margin-top: .22rem; }
+    .wf8-cap { display: inline-block; width: 1.18rem; height: 1.18rem; flex: 0 0 auto; }
+    .wf8-cap img { display: block; width: 100%; height: 100%; }
+    .wf8-legend { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .55rem 1.2rem; width: 100%; }
+    .wf8-legend span { display: flex; align-items: center; gap: .55rem; color: #6f747a; font-size: .82rem; white-space: nowrap; }
+    .wf8-legend .wf8-cap { width: 1.1rem; height: 1.1rem; }
+
+    .results-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 1rem; }
+    .results-grid .figure { margin: 0; }
+    .paper-table-wrap { overflow-x: auto; margin: 1.25rem 0; }
+    .paper-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+    .paper-table th, .paper-table td { padding: .55rem .7rem; border-bottom: 1px solid #e7e7e7; text-align: left; }
+    .paper-table th { color: var(--ink); font-weight: 700; }
+
+    .robot-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 1.4rem;
+    }
+    .robot-card { padding: 1.2rem 1.35rem; border-radius: 8px; background: var(--surface); }
+    .robot-card strong { display: block; margin-bottom: .3rem; color: var(--ink); font-size: 1.05rem; }
+    .robot-card p { margin: 0; line-height: 1.55; text-align: left; }
+
+    #BibTeX pre {
+      margin: 0;
+      padding: 1.5rem 2rem;
+      overflow-x: auto;
+      border: 0;
+      border-radius: 8px;
+      color: var(--muted);
+      background: var(--surface);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .82rem;
+      line-height: 1.6;
+    }
+    .footer { padding: 1rem 0 2.5rem; text-align: center; }
+    .footer p { margin: 0; color: #888; font-size: .88rem; }
+
+    @media (max-width: 800px) {
+      .wf8-legend { gap: .5rem .9rem; }
+      .wf8-legend span { gap: .25rem; font-size: .72rem; }
+    }
+    @media (max-width: 640px) {
+      .container { width: min(100% - 28px, var(--max-width)); }
+      .publication-header { padding-top: 2.2rem; }
+      .publication-title.is-1 { font-size: 2.4rem; }
+      .publication-title.is-2 { font-size: 1.9rem; }
+      .publication-authors { font-size: 1.05rem; }
+      .section { padding-bottom: 2.4rem; }
+      .abstract-box { padding: 1.4rem 1.3rem; }
+      h2.section-title { font-size: 1.75rem; }
+      .wf8-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem .8rem; }
+      .wf8-legend { justify-content: center; gap: .45rem .75rem; }
+      .robot-box { grid-template-columns: 1fr; }
+      .figure-caption { font-size: .86rem; }
+      .content p { text-align: left; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="publication-header">
+    <div class="container">
+      <h1 class="publication-title is-1"><strong>LeWAM:</strong></h1>
+      <h2 class="publication-title is-2">JEPA Can Be Succinct for Realistic Control</h2>
+
+      <div class="publication-authors"><span class="author-block">Anonymous Authors</span></div>
+
+      <div class="publication-links" aria-label="Project resources">
+        <a class="paper-button" href="static/pdfs/lewam.pdf">
+          <i class="fa-solid fa-file-pdf" aria-hidden="true"></i><span>Paper</span>
+        </a>
+        <span class="paper-button" aria-disabled="true" title="Released with the paper">
+          <i class="fa-brands fa-github" aria-hidden="true"></i><span>Code</span>
+        </span>
+        <span class="paper-button" aria-disabled="true" title="Released with the paper">
+          <i class="fa-solid fa-cubes" aria-hidden="true"></i><span>Data &amp; Checkpoints</span>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="teaser" aria-label="LeWAM overview">
+      <div class="container">
+        <figure class="media-frame">
+          <img src="static/images/paper/lewam_method_overview.png" alt="LeWAM joint-flow training and Steer-MPC planning overview">
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" id="abstract">
+      <div class="container">
+        <h2 class="section-title">Abstract</h2>
+        <div class="abstract-box content">
+          <p>
+            Joint-embedding predictive architectures (JEPAs) offer compact, reconstruction-free world models for control. Existing JEPA controllers, however, often combine specialized components: auxiliary anti-collapse objectives, separately trained action policies or population-based solvers, and pretrained visual backbones. These choices make the resulting pipelines complex to train and expensive to deploy, while their demonstrated scope remains largely limited to low-complexity, short-horizon tasks.
+          </p>
+          <p>
+            We introduce <strong>LeWAM</strong>, a succinct JEPA with no auxiliary components or constraints: a single joint prediction objective learns control-centric representations end-to-end. Forward dynamics describes what happens, while action prediction specifies how to realize it. For test-time planning, <strong>Steer-MPC</strong> optimizes a bounded goal-latent steering vector while keeping the predictor frozen. Across eight simulated environments and five physical-robot tasks, LeWAM targets contact-rich manipulation and long-horizon control beyond prior JEPA benchmarks.
+          </p>
+          <p class="tldr"><strong>TL;DR:</strong> LeWAM learns future latent states and executable action continuations together, then acts directly or plans by steering that same frozen continuation model.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="approach">
+      <div class="container">
+        <h2 class="section-title">Approach</h2>
+        <div class="narrow content">
+          <p><strong>One joint predictor.</strong> From reward-free trajectories, an encoder maps observations into latent states and one conditional predictor assigns a joint distribution to the next latent state and next action. Applying the same predictor recursively yields paired imagined latent and action continuations.</p>
+          <div class="formula" aria-label="LeWAM joint prediction equation">
+            (ẑ<sub>t+1</sub>, â<sub>t+1</sub>) ∼ p<sub>Θ</sub>(z<sub>t+1</sub>, a<sub>t+1</sub> | z<sub>≤t</sub>, a<sub>≤t</sub>, c<sub>t</sub>)
+          </div>
+          <p><strong>One objective.</strong> The latent and action targets shape the representation through a single joint likelihood. The action flow learns coherent, multimodal behavior; the goal-blind latent dynamics learns the physical consequence of clean actions. Every proposed continuation therefore remains paired with its predicted world change.</p>
+        </div>
+
+        <figure class="figure">
+          <img src="static/images/paper/contact_geometry.png" alt="Comparison of smooth planning, contact-rich raw-action search, and LeWAM paired latent-action continuations">
+          <figcaption class="figure-caption"><strong>Contact complicates the terminal-goal inverse.</strong> Nearby action proposals can cross contact boundaries at different times and enter different mode sequences. Joint prediction keeps those branches, but represents alternative solutions as paired latent–action continuations.</figcaption>
+        </figure>
+
+        <figure class="figure compact">
+          <img src="static/images/paper/lewam_three_consequences.png" alt="System-level comparison of LeWAM with multi-stage world-model pipelines">
+          <figcaption class="figure-caption"><strong>System-level positioning.</strong> LeWAM combines latent prediction, executable action generation, joint imagination, and planning in one learned interface.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" id="planning">
+      <div class="container">
+        <h2 class="section-title">Planning with LeWAM</h2>
+        <div class="narrow content">
+          <p>Direct control reads the action marginal of the joint model in one forward pass. When direct execution is insufficient, <strong>Steer-MPC</strong> searches through the same frozen continuation model—without updating model parameters and without assigning every time step an independent raw-action coordinate.</p>
+          <p>A bounded steering vector edits the encoded goal. The action conditional regenerates a complete, temporally coupled action continuation after every update; the unmodified goal remains the evaluation target. Only the first action is executed before replanning.</p>
+          <div class="formula" aria-label="Steer-MPC optimization equation">
+            v* = arg min<sub>‖v‖₂≤ρ</sub> d(F<sub>Θ</sub><sup>(H)</sup>(A(v)), z<sub>g</sub>)
+          </div>
+        </div>
+
+        <figure class="figure comparison-strip">
+          <img src="static/images/paper/lewam_results_overview.png" alt="LeWAM headline comparison across contact-rich tasks, long-horizon tasks, planning latency, and robot control frequency">
+          <figcaption class="figure-caption"><strong>Task-complete control and efficiency.</strong> The current paper overview summarizes contact-rich manipulation, long-horizon task completion, planning latency, and real-robot control frequency.</figcaption>
+        </figure>
+
+        <h3 class="subsection-title">WorldForge8</h3>
+        <div class="content">
+          <p>WorldForge8 evaluates the same JEPA-control interface across navigation, planar control, articulated manipulation, bimanual coordination, dexterity, precision, contact-rich dynamics, and long task horizons. The first row follows the four LeWM task definitions; the second row adds complementary long-horizon navigation and manipulation settings.</p>
+        </div>
+
+        <figure class="wf8-figure" aria-label="WorldForge8 dynamic task overview">
+          <div class="wf8-layout">
+            <div class="wf8-grid" id="wf8Grid" aria-label="Eight WorldForge trajectory videos"></div>
+            <aside class="wf8-legend" id="wf8Legend" aria-label="WorldForge capability legend"></aside>
+          </div>
+          <figcaption class="figure-caption"><strong>Representative simulation environments.</strong> Static observations from the paper figure are replaced here by their corresponding trajectories. Symbols denote overlapping task attributes.</figcaption>
+        </figure>
+
+        <h3 class="subsection-title">Goal-reaching and task-completion results</h3>
+        <div class="content">
+          <p>Short-horizon evaluation uses the same-trajectory 25-step visual-goal protocol and a 50-action execution budget. Task-completion evaluation instead pairs the first observation of a complete trajectory with its terminal observation, requiring the controller to finish the native task.</p>
+        </div>
+
+        <div class="results-grid">
+          <figure class="figure">
+            <img src="static/images/paper/sr_short_horizon.png" alt="Short-horizon goal-reaching results across eight environments">
+            <figcaption class="figure-caption"><strong>Goal reaching.</strong> Each panel denotes one environment under the same-trajectory, 25-step goal protocol. Dashed TBD boxes are unreported entries, not success rates.</figcaption>
+          </figure>
+          <figure class="figure">
+            <img src="static/images/paper/sr_long_horizon.png" alt="Long-horizon task-completion results across eight environments">
+            <figcaption class="figure-caption"><strong>Task completion.</strong> Each episode begins at the first observation and targets the terminal observation of a complete trajectory. Dashed TBD boxes remain pending in the paper.</figcaption>
+          </figure>
+        </div>
+        <p class="result-note">The webpage intentionally preserves the paper’s current TBD state. It does not infer values from placeholder boxes or promote draft measurements into claims.</p>
+      </div>
+    </section>
+
+    <section class="section" id="physical-understanding">
+      <div class="container">
+        <h2 class="section-title">Evaluating Physical Understanding</h2>
+        <div class="narrow content">
+          <h3 class="subsection-title">Control-centric representations</h3>
+          <p>LeWAM uses neither explicit state supervision nor an auxiliary representation regularizer. The paper therefore probes whether joint prediction organizes latent space around physical distinctions needed for control: observed state, contact mode, future displacement, temporal ordering, and imagined planning.</p>
+          <p>Matched latent-only, shuffled-action, frozen-encoder, SIGReg, and joint-MSE controls isolate whether structure comes from sensorimotor pairing, end-to-end learning, auxiliary anti-collapse, or modeling the full conditional action distribution.</p>
+        </div>
+
+        <figure class="figure compact media-frame">
+          <img src="static/images/paper/anti_collapse_mechanisms.png" alt="Explicit SIGReg distribution shaping compared with action-conditioned separation from flow matching">
+        </figure>
+        <p class="figure-caption"><strong>Representation shaping.</strong> Explicit latent-distribution regularization is contrasted with control-centric separation induced by joint action and latent targets.</p>
+
+        <div class="narrow content">
+          <h3 class="subsection-title">Why joint flow matching?</h3>
+          <p>A fixed-variance Gaussian and MSE can preserve the same input–output interface, but estimate only a conditional mean. Conditional flow matching can retain multiple coherent action continuations, with each action mode coupled to its own predicted latent consequence.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="robots">
+      <div class="container">
+        <h2 class="section-title">Real-robot Control</h2>
+        <div class="narrow content">
+          <p>The physical-robot study asks whether reconstruction-free joint prediction can convert a video foundation model’s visual and temporal prior into controllable structure. A frozen V-JEPA 2.1 backbone is paired with a trainable joint flow-matching predictor on a seven-DoF robot.</p>
+        </div>
+        <div class="robot-box narrow">
+          <div class="robot-card"><strong>Rigid-object manipulation</strong><p>Charging-block pick-and-place tests visually grounded grasping, transport, and placement.</p></div>
+          <div class="robot-card"><strong>Deformable interaction</strong><p>Towel folding tests extended, contact-rich behavior over a longer action horizon.</p></div>
+        </div>
+        <p class="result-note narrow">The Overleaf manuscript currently marks the finalized factorial robot results and matched latency measurements as pending. This page keeps that scope statement without fabricating results.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>LeWAM · Page structure follows the <a href="https://le-wm.github.io/">LeWorldModel project page</a>.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var tasks = [
+        { name:'Two-Room', video:'tworoom', poster:'tworoom', caps:['navigation'] },
+        { name:'Reacher', video:'reacher', poster:'reacher', caps:['precision'] },
+        { name:'Push-T', video:'pusht', poster:'pusht', caps:['navigation','precision'] },
+        { name:'Cube', video:'cube', poster:'cube', caps:['contact'] },
+        { name:'DrawerCleanup', video:'drawer', poster:'drawer_cleanup', caps:['contact','dexterous','long_horizon'] },
+        { name:'Transport', video:'transport', poster:'transport', caps:['contact','dexterous','long_horizon'] },
+        { name:'ToolHang', video:'toolhang', poster:'tool_hang', caps:['contact','precision','long_horizon'] },
+        { name:'PointMaze-Large', video:'pointmaze_large_ep0911_224x224', poster:'pointmaze_large_ep0911', caps:['navigation','long_horizon'] }
+      ];
+      var capabilityLabels = [
+        ['navigation','Navigation'], ['contact','Contact-rich'], ['dexterous','Dexterous'],
+        ['precision','Precision'], ['long_horizon','Long-horizon']
+      ];
+      var iconTitles = {
+        navigation:'Navigation', contact:'Contact-rich', dexterous:'Dexterous',
+        precision:'Precision', long_horizon:'Long-horizon'
+      };
+
+      function icon(kind) {
+        return '<span class="wf8-cap" title="' + iconTitles[kind] + '"><img src="static/images/worldforge8/icons/' + kind + '.svg" alt=""></span>';
+      }
+
+      function renderWorldForge() {
+        var grid = document.getElementById('wf8Grid');
+        var legend = document.getElementById('wf8Legend');
+        if (!grid || !legend) return;
+
+        grid.innerHTML = tasks.map(function (task) {
+          return '<div class="wf8-tile">' +
+            '<video class="wf8-video" autoplay muted loop playsinline preload="metadata" poster="static/images/worldforge8/' + task.poster + '.png" aria-label="' + task.name + ' trajectory">' +
+            '<source src="static/videos/worldforge8/' + task.video + '.mp4" type="video/mp4"></video>' +
+            '<span class="wf8-name">' + task.name + '</span>' +
+            '<span class="wf8-caps">' + task.caps.map(icon).join('') + '</span></div>';
+        }).join('');
+
+        legend.innerHTML = capabilityLabels.map(function (item) {
+          return '<span>' + icon(item[0]) + item[1] + '</span>';
+        }).join('');
+
+        var videos = Array.prototype.slice.call(grid.querySelectorAll('video'));
+        if ('IntersectionObserver' in window) {
+          var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) entry.target.play().catch(function () {});
+              else entry.target.pause();
+            });
+          }, { rootMargin:'120px 0px', threshold:.05 });
+          videos.forEach(function (video) { observer.observe(video); });
+        }
+      }
+
+      renderWorldForge();
+    }());
+  </script>
+</body>
+</html>
