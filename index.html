@@ -5,8 +5,8 @@
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="LeWAM: JEPA Can Be Succinct for Realistic Control. One joint predictor learns latent futures and executable action continuations end-to-end.">
-  <title>LeWAM: JEPA Can Be Succinct for Realistic Control</title>
+  <meta name="description" content="LeWAM: End-to-End JEPA for Control with Stochastic Action Modeling. Joint prediction of latent states and actions supports direct control and planning through latent imagination.">
+  <title>LeWAM: End-to-End JEPA for Control with Stochastic Action Modeling</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -190,6 +190,16 @@
     .paper-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
     .paper-table th, .paper-table td { padding: .55rem .7rem; border-bottom: 1px solid #e7e7e7; text-align: left; }
     .paper-table th { color: var(--ink); font-weight: 700; }
+    .paper-table caption { padding-bottom: .6rem; text-align: left; color: var(--ink); }
+    .paper-table td:not(:first-child) { white-space: nowrap; }
+    .trajectory-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    .trajectory-grid figure { margin: 0; text-align: center; }
+    .trajectory-grid img { display: block; width: 100%; height: auto; }
+    .trajectory-grid figcaption { margin-top: .5rem; font-weight: 700; }
+    .supplement { margin: 1.5rem 0 0; }
+    .supplement summary { cursor: pointer; color: var(--link); font-weight: 700; }
+    .planning-steps { padding-left: 1.4rem; }
+    .planning-steps li { margin-bottom: 1rem; line-height: 1.7; }
 
     .robot-box {
       display: grid;
@@ -232,6 +242,8 @@
       .wf8-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem .8rem; }
       .wf8-legend { justify-content: center; gap: .45rem .75rem; }
       .robot-box { grid-template-columns: 1fr; }
+      .trajectory-grid { gap: .45rem; }
+      .trajectory-grid figcaption { font-size: .85rem; }
       .figure-caption { font-size: .86rem; }
       .content p { text-align: left; }
     }
@@ -245,7 +257,7 @@
   <header class="publication-header">
     <div class="container">
       <h1 class="publication-title is-1"><strong>LeWAM:</strong></h1>
-      <h2 class="publication-title is-2">JEPA Can Be Succinct for Realistic Control</h2>
+      <h2 class="publication-title is-2">End-to-End JEPA for Control<br>with Stochastic Action Modeling</h2>
 
       <div class="publication-authors"><span class="author-block">Anonymous Authors</span></div>
 
@@ -267,129 +279,184 @@
     <section class="teaser" aria-label="LeWAM overview">
       <div class="container">
         <figure class="media-frame">
-          <img src="static/images/paper/lewam_method_overview.png" alt="LeWAM joint-flow training and Steer-MPC planning overview">
+          <img width="2400" height="564" src="static/images/paper/lewam_method_overview.png" alt="LeWAM learns latent dynamics and stochastic actions with a shared MoT predictor and SIGReg">
         </figure>
+        <p class="figure-caption"><strong>Two training ingredients.</strong> Joint prediction couples action-conditioned latent dynamics with stochastic action modeling. SIGReg regularizes the encoded latent states toward an isotropic Gaussian distribution.</p>
       </div>
     </section>
 
     <section class="section" id="abstract">
       <div class="container">
-        <h2 class="section-title">Abstract</h2>
+        <h2 class="section-title">Overview</h2>
         <div class="abstract-box content">
-          <p>
-            Joint-embedding predictive architectures (JEPAs) offer compact, reconstruction-free world models for control. Existing JEPA controllers, however, often combine specialized components: auxiliary anti-collapse objectives, separately trained action policies or population-based solvers, and pretrained visual backbones. These choices make the resulting pipelines complex to train and expensive to deploy, while their demonstrated scope remains largely limited to low-complexity, short-horizon tasks.
-          </p>
-          <p>
-            We introduce <strong>LeWAM</strong>, a succinct JEPA with no auxiliary components or constraints: a single joint prediction objective learns control-centric representations end-to-end. Forward dynamics describes what happens, while action prediction specifies how to realize it. For test-time planning, <strong>Steer-MPC</strong> optimizes a bounded goal-latent steering vector while keeping the predictor frozen. Across eight simulated environments and five physical-robot tasks, LeWAM targets contact-rich manipulation and long-horizon control beyond prior JEPA benchmarks.
-          </p>
-          <p class="tldr"><strong>TL;DR:</strong> LeWAM learns future latent states and executable action continuations together, then acts directly or plans by steering that same frozen continuation model.</p>
+          <p>Joint-embedding predictive architectures (JEPAs) learn compact latent world models without pixel reconstruction. Existing JEPAs typically decouple representation and dynamics learning from downstream control, while their demonstrated scope remains confined to short-horizon tasks with limited behavioral complexity.</p>
+          <p>We introduce <strong>LeWAM: an end-to-end JEPA with two ingredients</strong>: a joint prediction objective over latent states and actions, and an isotropic Gaussian constraint on the latent states. A shared predictor couples action-conditioned dynamics with stochastic action modeling, supporting direct control and efficient planning through latent imagination.</p>
+          <p>With <strong>17M parameters and single-GPU training</strong>, evaluation spans eight simulated tasks and physical robots. Goal-reaching planning is the primary evaluation; goal-free behavior cloning separately assesses direct execution. Physical-state probes and dynamics diagnostics examine what the learned representations capture.</p>
+          <p class="tldr"><strong>TL;DR:</strong> Learn representations, dynamics, and a stochastic policy together. Act directly, or sample candidate plans and refine their actions through the learned dynamics.</p>
         </div>
       </div>
     </section>
 
     <section class="section" id="approach">
       <div class="container">
-        <h2 class="section-title">Approach</h2>
+        <h2 class="section-title">Joint Learning from Pixels</h2>
         <div class="narrow content">
-          <p><strong>One joint predictor.</strong> From reward-free trajectories, an encoder maps observations into latent states and one conditional predictor assigns a joint distribution to the next latent state and next action. Applying the same predictor recursively yields paired imagined latent and action continuations.</p>
-          <div class="formula" aria-label="LeWAM joint prediction equation">
-            (ẑ<sub>t+1</sub>, â<sub>t+1</sub>) ∼ p<sub>Θ</sub>(z<sub>t+1</sub>, a<sub>t+1</sub> | z<sub>≤t</sub>, a<sub>≤t</sub>, c<sub>t</sub>)
+          <p><strong>One encoder and a shared predictor.</strong> History, future, and goal images share an encoder. A mixture of transformers (MoT) uses separate state and action transformations with masked attention. In simulation, the encoder and predictor train jointly from scratch, with a 192-dimensional latent state.</p>
+          <p><strong>Joint prediction plus SIGReg.</strong> Clean action chunks condition future-state prediction, supervised by latent mean squared error. Noisy actions learn a velocity field through flow matching. SIGReg regularizes the latent distribution while both prediction tasks shape the representation.</p>
+          <div class="formula" aria-label="Training loss equals dynamics loss plus action loss plus weighted SIGReg loss">
+            ℒ<sub>LeWAM</sub> = ℒ<sub>dyn</sub> + ℒ<sub>act</sub> + λ<sub>sig</sub> ℒ<sub>SIGReg</sub>
           </div>
-          <p><strong>One objective.</strong> The latent and action targets shape the representation through a single joint likelihood. The action flow learns coherent, multimodal behavior; the goal-blind latent dynamics learns the physical consequence of clean actions. Every proposed continuation therefore remains paired with its predicted world change.</p>
+          <p><strong>Goal-independent dynamics.</strong> The state query reads history and clean actions. Action-flow queries read history and a causal noisy-action prefix. Goal and remaining-horizon conditioning enter only the action readout, keeping the dynamics independent of the requested goal.</p>
         </div>
-
-        <figure class="figure">
-          <img src="static/images/paper/contact_geometry.png" alt="Comparison of smooth planning, contact-rich raw-action search, and LeWAM paired latent-action continuations">
-          <figcaption class="figure-caption"><strong>Contact complicates the terminal-goal inverse.</strong> Nearby action proposals can cross contact boundaries at different times and enter different mode sequences. Joint prediction keeps those branches, but represents alternative solutions as paired latent–action continuations.</figcaption>
-        </figure>
-
         <figure class="figure compact">
-          <img src="static/images/paper/lewam_three_consequences.png" alt="System-level comparison of LeWAM with multi-stage world-model pipelines">
-          <figcaption class="figure-caption"><strong>System-level positioning.</strong> LeWAM combines latent prediction, executable action generation, joint imagination, and planning in one learned interface.</figcaption>
+          <img width="2400" height="1955" src="static/images/paper/lewam_attention.png" loading="lazy" alt="Grouped MoT attention mask separating history, clean actions, state queries, and causal action-flow queries">
+          <figcaption class="figure-caption"><strong>Separate information paths within one predictor.</strong> Masked attention prevents future-target leakage while sharing learned structure between dynamics and action modeling.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img width="2400" height="666" src="static/images/paper/lewam_three_consequences.png" loading="lazy" alt="LeWAM combines control-centric representation learning, reconstruction-free prediction, and policy-guided gradient planning">
+          <figcaption class="figure-caption"><strong>System-level positioning.</strong> The simulation model learns from scratch. The physical-robot study also evaluates a variant with a frozen pretrained visual backbone. Models are trained separately for each task and embodiment.</figcaption>
         </figure>
       </div>
     </section>
 
     <section class="section" id="planning">
       <div class="container">
-        <h2 class="section-title">Planning with LeWAM</h2>
+        <h2 class="section-title">Direct Control and Planning</h2>
         <div class="narrow content">
-          <p>Direct control reads the action marginal of the joint model in one forward pass. When direct execution is insufficient, <strong>Steer-MPC</strong> searches through the same frozen continuation model—without updating model parameters and without assigning every time step an independent raw-action coordinate.</p>
-          <p>A bounded steering vector edits the encoded goal. The action conditional regenerates a complete, temporally coupled action continuation after every update; the unmodified goal remains the evaluation target. Only the first action is executed before replanning.</p>
-          <div class="formula" aria-label="Steer-MPC optimization equation">
-            v* = arg min<sub>‖v‖₂≤ρ</sub> d(F<sub>Θ</sub><sup>(H)</sup>(A(v)), z<sub>g</sub>)
+          <p><strong>Direct control.</strong> Integrating the learned action velocity field from Gaussian noise generates a 2K-action chunk. The controller executes its first K actions, observes the environment again, and repeats.</p>
+          <p><strong>Planning has two stages, with the model frozen:</strong></p>
+          <ol class="planning-steps">
+            <li><strong>Global search in the action distribution.</strong> Sample one population of N complete candidate plans. Each plan alternates stochastic action generation with latent dynamics rollouts, extending the imagined history and updating the remaining horizon. Select the candidate with the lowest terminal latent goal error.</li>
+            <li><strong>Gradient-based search.</strong> Starting from that candidate, optimize the actions through the differentiable dynamics. A proximity penalty and clipping constrain refinement; retain the best iterate, including the initial candidate.</li>
+          </ol>
+          <div class="formula" aria-label="Terminal goal cost is the mean squared error between the predicted final latent state and the encoded goal">
+            C(a) = MSE(ẑ<sub>t+L</sub>(a), z<sub>g</sub>)
           </div>
+          <p>In receding-horizon execution, run the first K actions and repeat both planning stages from the new observation.</p>
         </div>
-
-        <figure class="figure comparison-strip">
-          <img src="static/images/paper/lewam_results_overview.png" alt="LeWAM headline comparison across contact-rich tasks, long-horizon tasks, planning latency, and robot control frequency">
-          <figcaption class="figure-caption"><strong>Task-complete control and efficiency.</strong> The current paper overview summarizes contact-rich manipulation, long-horizon task completion, planning latency, and real-robot control frequency.</figcaption>
+        <figure class="figure">
+          <img width="2400" height="626" src="static/images/paper/lewam_planning.png" loading="lazy" alt="Autoregressive action and latent rollouts, best-of-N candidate selection, and action refinement using dynamics gradients">
+          <figcaption class="figure-caption"><strong>Plan with the same learned interface.</strong> Action sampling supplies plausible initial plans, and dynamics gradients refine their actions toward the encoded goal.</figcaption>
         </figure>
+      </div>
+    </section>
 
-        <h3 class="subsection-title">WorldForge8</h3>
-        <div class="content">
-          <p>WorldForge8 evaluates the same JEPA-control interface across navigation, planar control, articulated manipulation, bimanual coordination, dexterity, precision, contact-rich dynamics, and long task horizons. The first row follows the four LeWM task definitions; the second row adds complementary long-horizon navigation and manipulation settings.</p>
+    <section class="section" id="experiments">
+      <div class="container">
+        <h2 class="section-title">Simulation Experiments</h2>
+        <div class="narrow content">
+          <p>WorldForge8 spans navigation, planar control, articulated manipulation, bimanual coordination, dexterity, and contact-rich dynamics. The suite includes the four LeWM environments and four additional navigation and manipulation settings.</p>
         </div>
-
         <figure class="wf8-figure" aria-label="WorldForge8 dynamic task overview">
           <div class="wf8-layout">
             <div class="wf8-grid" id="wf8Grid" aria-label="Eight WorldForge trajectory videos"></div>
             <aside class="wf8-legend" id="wf8Legend" aria-label="WorldForge capability legend"></aside>
           </div>
-          <figcaption class="figure-caption"><strong>Representative simulation environments.</strong> Static observations from the paper figure are replaced here by their corresponding trajectories. Symbols denote overlapping task attributes.</figcaption>
+          <figcaption class="figure-caption"><strong>Eight simulation environments.</strong> Representative trajectories replace the paper's static observations, including PointMaze-Large. Symbols denote overlapping task attributes.</figcaption>
         </figure>
 
-        <h3 class="subsection-title">Goal-reaching and task-completion results</h3>
-        <div class="content">
-          <p>Short-horizon evaluation uses the same-trajectory 25-step visual-goal protocol and a 50-action execution budget. Task-completion evaluation instead pairs the first observation of a complete trajectory with its terminal observation, requiring the controller to finish the native task.</p>
-        </div>
+        <h3 class="subsection-title">Current manuscript overview</h3>
+        <figure class="figure comparison-strip">
+          <img width="2400" height="774" src="static/images/paper/lewam_results_overview.png" loading="lazy" alt="Current manuscript overview: contact-rich and 100-step goal reaching, planning throughput, and robot control frequency">
+          <figcaption class="figure-caption"><strong>Reported manuscript aggregates.</strong> Contact-rich success averages four tasks; the 100-step comparison averages Push-T and Cube. Planning throughput is reported against LeWM (CEM), and physical control frequency against GPT-6 Astra.</figcaption>
+        </figure>
+        <p class="result-note"><strong>Provisional results.</strong> These aggregates are not finalized: DrawerCleanup and Transport use earlier measurements, and the 100-step comparison includes a preliminary Cube result and a baseline layout placeholder. The 10.8× throughput comparison and robot-frequency comparison still require finalized timing configurations. See the protocol-specific results below.</p>
 
-        <div class="results-grid">
-          <figure class="figure">
-            <img src="static/images/paper/sr_short_horizon.png" alt="Short-horizon goal-reaching results across eight environments">
-            <figcaption class="figure-caption"><strong>Goal reaching.</strong> Each panel denotes one environment under the same-trajectory, 25-step goal protocol. Dashed TBD boxes are unreported entries, not success rates.</figcaption>
-          </figure>
-          <figure class="figure">
-            <img src="static/images/paper/sr_long_horizon.png" alt="Long-horizon task-completion results across eight environments">
-            <figcaption class="figure-caption"><strong>Task completion.</strong> Each episode begins at the first observation and targets the terminal observation of a complete trajectory. Dashed TBD boxes remain pending in the paper.</figcaption>
-          </figure>
+        <h3 class="subsection-title">Short-horizon goal reaching</h3>
+        <div class="content"><p>The common protocol specifies a goal image 25 steps later in the same trajectory and permits 50 executed actions.</p></div>
+        <figure class="figure">
+          <img width="2400" height="1225" src="static/images/paper/sr_short_horizon.png" loading="lazy" alt="Short-horizon visual goal-reaching success rates in the eight simulation environments">
+          <figcaption class="figure-caption"><strong>Success rate under the 25-step visual-goal protocol.</strong> Error bars show the uncertainty reported in the paper. Top-row axes begin at 50%; bottom-row axes begin at 0%. Reacher GCBC (3.3 ± 2.3%) falls below its displayed range. LeWAM's DrawerCleanup and Transport entries await final confirmation.</figcaption>
+        </figure>
+
+        <h3 class="subsection-title">Increasing the goal horizon</h3>
+        <div class="content"><p>The horizon study evaluates goals 25, 50, 75, and 100 steps ahead. Push-T starts from frame zero, permits twice the goal horizon in executed actions, and replans every 25 steps.</p></div>
+        <figure class="figure compact">
+          <img width="2400" height="993" src="static/images/paper/planning_horizon.png" loading="lazy" alt="Goal-reaching performance as the goal horizon increases for Push-T and Cube; Cube includes provisional display values">
+          <figcaption class="figure-caption"><strong>Longer-horizon goal reaching.</strong> The current Push-T measurements report 45.3% for LeWAM and 2.7% for LeWM at 100 steps. Cube's 25-step points use a different, sampled-start protocol. Beyond 25 steps, Cube includes layout placeholders; only LeWAM's 100-step value is a preliminary estimate. Those Cube curves are not finalized measurements.</figcaption>
+        </figure>
+
+        <h3 class="subsection-title">Goal-free task completion</h3>
+        <div class="content"><p>Behavior cloning evaluates direct control from observation history, with <strong>no goal image or remaining-horizon input</strong>. These results are separate from goal-reaching planning.</p></div>
+        <div class="paper-table-wrap">
+          <table class="paper-table">
+            <caption>Current goal-free success rates (%); ± denotes reported standard deviation.</caption>
+            <thead><tr><th scope="col">Method</th><th scope="col">Cube</th><th scope="col">DrawerCleanup</th><th scope="col">Transport</th><th scope="col">ToolHang</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Diffusion Policy</th><td>Pending</td><td>54.7</td><td>45.3</td><td>84.7 ± 3.1</td></tr>
+              <tr><th scope="row">LeWAM</th><td>Pending</td><td>52.7</td><td>61.3</td><td>80.0 ± 3.5</td></tr>
+            </tbody>
+          </table>
         </div>
-        <p class="result-note">The webpage intentionally preserves the paper’s current TBD state. It does not infer values from placeholder boxes or promote draft measurements into claims.</p>
+        <p class="figure-caption">LeWAM uses one camera. DrawerCleanup and Transport standard deviations remain pending in the manuscript; expert replay reaches 72.0% on DrawerCleanup. The table preserves the current manuscript values pending final result reconciliation.</p>
+        <details class="supplement">
+          <summary>Additional protocol: start-to-end goal reaching</summary>
+          <figure class="figure">
+            <img width="2400" height="1225" src="static/images/paper/sr_long_horizon.png" loading="lazy" alt="Appendix start-to-end goal-reaching results, including pending entries">
+            <figcaption class="figure-caption"><strong>Terminal-image-conditioned evaluation.</strong> Each episode starts at the first observation and uses the trajectory's terminal image as its goal. This is start-to-end goal reaching, distinct from goal-free task completion. TBD entries remain unreported.</figcaption>
+          </figure>
+        </details>
       </div>
     </section>
 
     <section class="section" id="physical-understanding">
       <div class="container">
-        <h2 class="section-title">Evaluating Physical Understanding</h2>
+        <h2 class="section-title">Representations and Stochastic Actions</h2>
         <div class="narrow content">
-          <h3 class="subsection-title">Control-centric representations</h3>
-          <p>LeWAM uses neither explicit state supervision nor an auxiliary representation regularizer. The paper therefore probes whether joint prediction organizes latent space around physical distinctions needed for control: observed state, contact mode, future displacement, temporal ordering, and imagined planning.</p>
-          <p>Matched latent-only, shuffled-action, frozen-encoder, SIGReg, and joint-MSE controls isolate whether structure comes from sensorimotor pairing, end-to-end learning, auxiliary anti-collapse, or modeling the full conditional action distribution.</p>
+          <h3 class="subsection-title">Physical-state probing and SIGReg</h3>
+          <p>Linear probes decode the Push-T block state and ToolHang tool state. The current ablation compares LeWAM with and without SIGReg, measuring effective rank, physical-state R², and success under direct control and planning.</p>
         </div>
-
-        <figure class="figure compact media-frame">
-          <img src="static/images/paper/anti_collapse_mechanisms.png" alt="Explicit SIGReg distribution shaping compared with action-conditioned separation from flow matching">
-        </figure>
-        <p class="figure-caption"><strong>Representation shaping.</strong> Explicit latent-distribution regularization is contrasted with control-centric separation induced by joint action and latent targets.</p>
-
+        <div class="paper-table-wrap">
+          <table class="paper-table">
+            <caption>LeWAM SIGReg ablation reported in the current manuscript.</caption>
+            <thead><tr><th scope="col">Task</th><th scope="col">SIGReg</th><th scope="col">Effective rank</th><th scope="col">Probe R²</th><th scope="col">Direct SR (%)</th><th scope="col">Plan SR (%)</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Push-T</th><td>Yes</td><td>32.71</td><td>0.947</td><td>80.0</td><td>94.7</td></tr>
+              <tr><th scope="row">Push-T</th><td>No</td><td>4.72</td><td>0.803</td><td>72.7</td><td>78.7</td></tr>
+              <tr><th scope="row">ToolHang</th><td>Yes</td><td>19.75</td><td>0.929</td><td>92.0</td><td>93.3</td></tr>
+              <tr><th scope="row">ToolHang</th><td>No</td><td>8.20</td><td>0.868</td><td>92.0</td><td>90.7</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="figure-caption">Effective rank uses the participation ratio. Uncertainty estimates for these ablation records remain pending. Physical-state decodability does not by itself establish dynamics generalization or reliable control under distribution shift.</p>
         <div class="narrow content">
-          <h3 class="subsection-title">Why joint flow matching?</h3>
-          <p>A fixed-variance Gaussian and MSE can preserve the same input–output interface, but estimate only a conditional mean. Conditional flow matching can retain multiple coherent action continuations, with each action mode coupled to its own predicted latent consequence.</p>
+          <h3 class="subsection-title">Qualitative action distributions</h3>
+          <p>In two-door navigation, demonstrations use both passages. The MSE action head concentrates on the lower passage and produces collisions in the displayed examples, while the flow-matching head samples both routes.</p>
         </div>
+        <div class="trajectory-grid">
+          <figure><img width="2400" height="2400" src="static/images/paper/action_expert.png" loading="lazy" alt="Expert navigation trajectories using both doorways"><figcaption>Demonstrations</figcaption></figure>
+          <figure><img width="2400" height="2400" src="static/images/paper/action_mse.png" loading="lazy" alt="MSE action-head trajectories concentrated at the lower doorway"><figcaption>MSE action head</figcaption></figure>
+          <figure><img width="2400" height="2400" src="static/images/paper/action_flow.png" loading="lazy" alt="Flow-matching action-head trajectories using both doorways"><figcaption>Flow-matching action head</figcaption></figure>
+        </div>
+        <p class="figure-caption"><strong>Qualitative examples.</strong> Matched quantitative action-head comparisons, encoder controls, and dynamics-generalization diagnostics remain pending in the manuscript.</p>
       </div>
     </section>
 
     <section class="section" id="robots">
       <div class="container">
-        <h2 class="section-title">Real-robot Control</h2>
+        <h2 class="section-title">Physical-Robot Control</h2>
         <div class="narrow content">
-          <p>The physical-robot study asks whether reconstruction-free joint prediction can convert a video foundation model’s visual and temporal prior into controllable structure. A frozen V-JEPA 2.1 backbone is paired with a trainable joint flow-matching predictor on a seven-DoF robot.</p>
+          <p>The physical study evaluates <strong>Pick and Place T</strong> and <strong>Push-T</strong>, with a third task still pending. It compares an end-to-end LeWAM model and a variant built on a frozen V-JEPA 2.1 backbone against the current baselines.</p>
+          <p>The policy uses a scene camera and a wrist camera. A seven-DoF robot sends observations to a remote inference machine, receives action chunks, and executes joint targets at 30 Hz. Each method is evaluated in 30 trials per task.</p>
         </div>
-        <div class="robot-box narrow">
-          <div class="robot-card"><strong>Rigid-object manipulation</strong><p>Charging-block pick-and-place tests visually grounded grasping, transport, and placement.</p></div>
-          <div class="robot-card"><strong>Deformable interaction</strong><p>Towel folding tests extended, contact-rich behavior over a longer action horizon.</p></div>
+        <figure class="figure">
+          <img width="2400" height="388" src="static/images/paper/real_robot_task_suite.png" loading="lazy" alt="Temporary scene and wrist example frames for Pick and Place T, Push-T, and a pending third robot task">
+          <figcaption class="figure-caption"><strong>Current robot task suite.</strong> The paper uses temporary example frames pending task-specific replacements. The third task remains TBD.</figcaption>
+        </figure>
+        <div class="paper-table-wrap narrow">
+          <table class="paper-table">
+            <caption>Current robot results: successes out of 30 trials.</caption>
+            <thead><tr><th scope="col">Method</th><th scope="col">Pick and Place T</th><th scope="col">Push-T</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Diffusion Policy</th><td>19 / 30</td><td>16 / 30</td></tr>
+              <tr><th scope="row">π<sub>0.5</sub></th><td>14 / 30</td><td>Pending</td></tr>
+              <tr><th scope="row">GPT-6 Astra (one-shot + goal)</th><td>Pending</td><td>Pending</td></tr>
+              <tr><th scope="row">LeWAM, frozen V-JEPA 2.1</th><td>15 / 30</td><td>12 / 30</td></tr>
+              <tr><th scope="row">LeWAM, end-to-end</th><td>16 / 30</td><td>8 / 30</td></tr>
+            </tbody>
+          </table>
         </div>
-        <p class="result-note narrow">The Overleaf manuscript currently marks the finalized factorial robot results and matched latency measurements as pending. This page keeps that scope statement without fabricating results.</p>
+        <p class="figure-caption narrow">These are the current manuscript counts. Final robot results, per-trial uncertainty, the third task, and measured inference costs remain pending. The 30 Hz execution rate is distinct from a complete model-and-network latency measurement.</p>
       </div>
     </section>
 
