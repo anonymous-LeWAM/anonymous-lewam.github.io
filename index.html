@@ -87,7 +87,8 @@
     .paper-button[aria-disabled="true"] { opacity: .62; cursor: default; }
     .paper-button:focus-visible, video:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
 
-    .teaser { padding: 1.25rem 0 3rem; }
+    .teaser { padding: 1.25rem 0 1.5rem; }
+    .teaser .figure { margin-bottom: 0; }
     .media-frame {
       margin: 0;
       overflow: hidden;
@@ -136,7 +137,7 @@
       text-align: center;
       white-space: nowrap;
     }
-    .figure { margin: 1.6rem 0 2rem; }
+    .figure { margin: 1.6rem auto 2rem; }
     .figure > img { display: block; width: 100%; height: auto; }
     .figure-caption {
       width: min(820px, 100%);
@@ -147,26 +148,14 @@
       text-align: left;
     }
     .figure-caption strong { color: var(--ink); }
-    .figure.compact { width: min(780px, 100%); margin-inline: auto; }
-    .figure.attention-figure { width: min(600px, 100%); margin-inline: auto; }
+    /* Match each figure's share of the manuscript text width. */
+    .figure--attention { width: min(44%, 27rem); }
+    .figure--ninety { width: 90%; }
 
-    .comparison-strip { margin: 1.6rem 0; }
-    .comparison-strip img { display: block; width: 100%; }
-    .result-note {
-      margin: 1rem 0 1.5rem;
-      padding: .8rem 1rem;
-      border-left: 3px solid #c9ced3;
-      color: #6d7175;
-      background: #fafafa;
-      font-size: .9rem;
-      line-height: 1.55;
-    }
-
-    /* WorldForge8 is the website's one signature moment: the exact paper figure
-       structure, with each static 224x224 observation replaced by its trajectory. */
-    .wf8-figure { margin: 1.6rem auto 2rem; font-family: Arial, Helvetica, sans-serif; }
+    .video-intro { margin: 0 auto 1rem; line-height: 1.65; }
+    .wf8-figure { width: 90%; margin: 1rem auto 2.5rem; font-family: Arial, Helvetica, sans-serif; }
     .wf8-layout { display: flex; flex-direction: column; align-items: center; gap: 1.05rem; }
-    .wf8-grid { display: grid; width: min(100%, 54rem); grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: .9rem; row-gap: 1.35rem; }
+    .wf8-grid { display: grid; width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: .9rem; row-gap: 1.35rem; }
     .wf8-tile { min-width: 0; text-align: center; }
     .wf8-video {
       display: block;
@@ -182,7 +171,7 @@
     .wf8-caps { min-height: 1.25rem; display: flex; justify-content: center; gap: .22rem; margin-top: .22rem; }
     .wf8-cap { display: inline-block; width: 1.18rem; height: 1.18rem; flex: 0 0 auto; }
     .wf8-cap img { display: block; width: 100%; height: 100%; }
-    .wf8-legend { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .55rem 1.2rem; width: 100%; }
+    .wf8-legend { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .55rem 1.2rem; width: 100%; padding-top: .2rem; }
     .wf8-legend span { display: flex; align-items: center; gap: .55rem; color: #6f747a; font-size: .82rem; white-space: nowrap; }
     .wf8-legend .wf8-cap { width: 1.1rem; height: 1.1rem; }
 
@@ -229,6 +218,7 @@
     .footer p { margin: 0; color: #888; font-size: .88rem; }
 
     @media (max-width: 800px) {
+      .figure--attention { width: min(100%, 27rem); }
       .wf8-legend { gap: .5rem .9rem; }
       .wf8-legend span { gap: .25rem; font-size: .72rem; }
     }
@@ -241,6 +231,7 @@
       .abstract-box { padding: 1.4rem 1.3rem; }
       h2.section-title { font-size: 1.75rem; }
       .wf8-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem .8rem; }
+      .wf8-figure, .figure--ninety { width: 100%; }
       .wf8-legend { justify-content: center; gap: .45rem .75rem; }
       .robot-box { grid-template-columns: 1fr; }
       .trajectory-grid { gap: .45rem; }
@@ -279,9 +270,13 @@
     <section class="teaser" aria-label="LeWAM overview">
       <div class="container">
         <figure class="media-frame">
-          <img width="2400" height="564" src="static/images/paper/lewam_method_overview.png" alt="LeWAM learns latent dynamics and stochastic actions with a shared MoT predictor and SIGReg">
+          <img width="2400" height="624" src="static/images/paper/lewam_method_overview.png" alt="LeWAM learns latent dynamics and stochastic actions with a shared MoT predictor and SIGReg">
         </figure>
         <p class="figure-caption"><strong>Two training ingredients.</strong> Joint prediction couples action-conditioned latent dynamics with stochastic action modeling. SIGReg regularizes the encoded latent states toward an isotropic Gaussian distribution.</p>
+        <figure class="figure">
+          <img width="2400" height="772" src="static/images/paper/lewam_results_overview.png" loading="lazy" alt="Contact-rich and 100-step goal reaching, planning speed, and robot inference compute efficiency">
+          <figcaption class="figure-caption"><strong>Results at a glance.</strong> The four comparisons summarize contact-rich goal reaching, 100-step goal reaching, planning throughput, and robot action-chunk inference compute. Detailed protocols and results follow below and in the paper.</figcaption>
+        </figure>
       </div>
     </section>
 
@@ -308,8 +303,8 @@
           </div>
           <p><strong>Goal-independent dynamics.</strong> The state query reads history and clean actions. Action-flow queries read history and a causal noisy-action prefix. Goal and remaining-horizon conditioning enter only the action readout, keeping the dynamics independent of the requested goal.</p>
         </div>
-        <figure class="figure attention-figure">
-          <img width="2400" height="1955" src="static/images/paper/lewam_attention.png" loading="lazy" alt="Grouped MoT attention mask separating history, clean actions, state queries, and causal action-flow queries">
+        <figure class="figure figure--attention">
+          <img width="2400" height="1924" src="static/images/paper/lewam_attention.png" loading="lazy" alt="Grouped MoT attention mask separating history, clean actions, state queries, and causal action-flow queries">
           <figcaption class="figure-caption"><strong>Separate information paths within one predictor.</strong> Masked attention prevents future-target leakage while sharing learned structure between dynamics and action modeling.</figcaption>
         </figure>
         <figure class="figure">
@@ -347,22 +342,18 @@
         <div class="narrow content">
           <p>The ten-task simulation suite spans navigation, planar control, articulated manipulation, bimanual coordination, dexterity, and contact-rich dynamics. It includes four LeWM environments and six additional settings.</p>
         </div>
-        <figure class="figure">
-          <img src="static/images/paper/worldforge10_overview.png" loading="lazy" alt="Overview of the ten simulated tasks, including Scene and Puzzle">
-          <figcaption class="figure-caption"><strong>Ten simulated tasks.</strong> The two tasks without trajectory videos below are Scene and Puzzle.</figcaption>
+        <figure class="figure figure--ninety">
+          <img width="2400" height="950" src="static/images/paper/worldforge10_overview.png" loading="lazy" alt="Overview of the ten simulated tasks, including Scene and Puzzle">
+          <figcaption class="figure-caption"><strong>Ten simulated tasks.</strong> The symbols under each task mark overlapping attributes, as in the paper.</figcaption>
         </figure>
-        <figure class="wf8-figure" aria-label="WorldForge8 dynamic task overview">
+        <h3 class="subsection-title">Example task rollouts</h3>
+        <p class="narrow video-intro">Eight of the ten tasks have short rollout videos below. Scene and Puzzle appear in the overview above but have no video here. The symbols under each video identify task attributes.</p>
+        <figure class="wf8-figure" aria-label="Eight simulated task rollouts">
           <div class="wf8-layout">
-            <div class="wf8-grid" id="wf8Grid" aria-label="Eight WorldForge trajectory videos"></div>
-            <aside class="wf8-legend" id="wf8Legend" aria-label="WorldForge capability legend"></aside>
+            <div class="wf8-grid" id="wf8Grid" aria-label="Eight trajectory videos"></div>
+            <aside class="wf8-legend" id="wf8Legend" aria-label="Task attribute legend"></aside>
           </div>
-          <figcaption class="figure-caption"><strong>Eight representative trajectories.</strong> Videos show eight of the ten simulated tasks, including PointMaze-Large. Symbols denote overlapping task attributes.</figcaption>
-        </figure>
-
-        <h3 class="subsection-title">Current manuscript overview</h3>
-        <figure class="figure comparison-strip">
-          <img width="2400" height="772" src="static/images/paper/lewam_results_overview.png" loading="lazy" alt="Current manuscript overview: contact-rich and 100-step goal reaching, planning speed, and robot inference compute efficiency">
-          <figcaption class="figure-caption"><strong>Reported manuscript aggregates.</strong> Contact-rich success averages four tasks; the 100-step comparison averages Push-T, Cube, Scene, and Puzzle. Planning throughput is 32.3× that of LeWM (CEM) across four tasks. The robot comparison counts action chunks per unit of inference compute against π<sub>0.5</sub>.</figcaption>
+          <figcaption class="figure-caption"><strong>Representative trajectories.</strong> These clips illustrate behavior, while the success rates below report the quantitative evaluation.</figcaption>
         </figure>
 
         <h3 class="subsection-title">Short-horizon goal reaching</h3>
@@ -374,7 +365,7 @@
 
         <h3 class="subsection-title">Increasing the goal horizon</h3>
         <div class="content"><p>The horizon study evaluates goals 25, 50, 75, and 100 steps ahead in Push-T, Cube, Scene, and Puzzle. See the paper for the task-specific protocols.</p></div>
-        <figure class="figure compact">
+        <figure class="figure">
           <img width="2400" height="477" src="static/images/paper/planning_horizon.png" loading="lazy" alt="Goal-reaching performance at 25, 50, 75, and 100 steps across four tasks">
           <figcaption class="figure-caption"><strong>Longer-horizon goal reaching.</strong> At the 100-step goal offset, LeWAM averages 46.2% success across the four tasks versus 10.9% for LeWM (CEM).</figcaption>
         </figure>
@@ -415,7 +406,7 @@
         </div>
         <p class="figure-caption">Action (IDM) uses either the current latent state or a pair of current and future states, respectively. These probes describe decodability, rather than control success.</p>
         <figure class="figure">
-          <img src="static/images/paper/model_ablations.png" loading="lazy" alt="Model ablations for representation regularization, encoder and action choices, and goal-free task completion">
+          <img width="2400" height="586" src="static/images/paper/model_ablations.png" loading="lazy" alt="Model ablations for representation regularization, encoder and action choices, and goal-free task completion">
           <figcaption class="figure-caption"><strong>Model components.</strong> The paper reports how removing SIGReg changes effective rank and planning, alongside encoder, action-model, and goal-free task-completion comparisons.</figcaption>
         </figure>
         <div class="narrow content">
@@ -439,7 +430,7 @@
           <p>The policy uses a scene camera and a wrist camera. A seven-DoF robot sends observations to a remote inference machine, receives action chunks, and executes joint targets at 30 Hz. Each method is evaluated in 30 trials per task.</p>
         </div>
         <figure class="figure">
-          <img src="static/images/paper/real_robot_task_suite.png" loading="lazy" alt="Scene and wrist views for Pick and Place T, Push-T, and Tape Stack">
+          <img width="2400" height="400" src="static/images/paper/real_robot_task_suite.png" loading="lazy" alt="Scene and wrist views for Pick and Place T, Push-T, and Tape Stack">
           <figcaption class="figure-caption"><strong>Three physical-robot tasks.</strong> Scene and wrist views show the setups used for Pick and Place T, Push-T, and Tape Stack.</figcaption>
         </figure>
         <div class="paper-table-wrap narrow">
@@ -472,11 +463,11 @@
         { name:'Two-Room', video:'tworoom', poster:'tworoom', caps:['navigation'] },
         { name:'Reacher', video:'reacher', poster:'reacher', caps:['precision'] },
         { name:'Push-T', video:'pusht', poster:'pusht', caps:['navigation','precision'] },
+        { name:'PointMaze-Large', video:'pointmaze_large_ep0911_224x224', poster:'pointmaze_large_ep0911', caps:['navigation','long_horizon'] },
         { name:'Cube', video:'cube', poster:'cube', caps:['contact'] },
-        { name:'DrawerCleanup', video:'drawer', poster:'drawer_cleanup', caps:['contact','dexterous','long_horizon'] },
-        { name:'Transport', video:'transport', poster:'transport', caps:['contact','dexterous','long_horizon'] },
         { name:'ToolHang', video:'toolhang', poster:'tool_hang', caps:['contact','precision','long_horizon'] },
-        { name:'PointMaze-Large', video:'pointmaze_large_ep0911_224x224', poster:'pointmaze_large_ep0911', caps:['navigation','long_horizon'] }
+        { name:'Transport', video:'transport', poster:'transport', caps:['contact','dexterous','long_horizon'] },
+        { name:'DrawerCleanup', video:'drawer', poster:'drawer_cleanup', caps:['contact','dexterous','long_horizon'] }
       ];
       var capabilityLabels = [
         ['navigation','Navigation'], ['contact','Contact-rich'], ['dexterous','Dexterous'],
