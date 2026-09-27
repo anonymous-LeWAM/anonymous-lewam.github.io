@@ -57,9 +57,10 @@
       font-weight: 700;
       line-height: 1.1;
       letter-spacing: 0;
+      font-size: clamp(1.6rem, 5vw, 3rem);
+      margin-bottom: 1.5rem;
     }
-    .publication-title.is-1 { font-size: clamp(2.65rem, 5.4vw, 3rem); margin-bottom: 1.5rem; }
-    .publication-title.is-2 { font-size: clamp(2rem, 4.3vw, 2.5rem); margin-bottom: 1.5rem; }
+    .publication-title .title-line { display: block; white-space: nowrap; }
     .publication-authors { font-size: 1.2rem; font-weight: 400; }
     .author-block { display: inline-block; }
     .publication-authors a { font-weight: 400; text-decoration: none; }
@@ -233,8 +234,7 @@
     @media (max-width: 640px) {
       .container { width: min(100% - 28px, var(--max-width)); }
       .publication-header { padding-top: 2.2rem; }
-      .publication-title.is-1 { font-size: 2.4rem; }
-      .publication-title.is-2 { font-size: 1.9rem; }
+      .publication-title { font-size: clamp(1rem, 4.2vw, 1.8rem); }
       .publication-authors { font-size: 1.05rem; }
       .section { padding-bottom: 2.4rem; }
       .abstract-box { padding: 1.4rem 1.3rem; }
@@ -256,8 +256,7 @@
 
   <header class="publication-header">
     <div class="container">
-      <h1 class="publication-title is-1"><strong>LeWAM:</strong></h1>
-      <h2 class="publication-title is-2">End-to-End World and Action<br>Modeling with JEPAs</h2>
+      <h1 class="publication-title"><span class="title-line">LeWAM: End-to-End World and</span><span class="title-line">Action Modeling with JEPAs</span></h1>
 
       <div class="publication-authors"><span class="author-block">Anonymous Authors</span></div>
 
