@@ -148,6 +148,7 @@
     }
     .figure-caption strong { color: var(--ink); }
     .figure.compact { width: min(780px, 100%); margin-inline: auto; }
+    .figure.attention-figure { width: min(600px, 100%); margin-inline: auto; }
 
     .comparison-strip { margin: 1.6rem 0; }
     .comparison-strip img { display: block; width: 100%; }
@@ -307,7 +308,7 @@
           </div>
           <p><strong>Goal-independent dynamics.</strong> The state query reads history and clean actions. Action-flow queries read history and a causal noisy-action prefix. Goal and remaining-horizon conditioning enter only the action readout, keeping the dynamics independent of the requested goal.</p>
         </div>
-        <figure class="figure compact">
+        <figure class="figure attention-figure">
           <img width="2400" height="1955" src="static/images/paper/lewam_attention.png" loading="lazy" alt="Grouped MoT attention mask separating history, clean actions, state queries, and causal action-flow queries">
           <figcaption class="figure-caption"><strong>Separate information paths within one predictor.</strong> Masked attention prevents future-target leakage while sharing learned structure between dynamics and action modeling.</figcaption>
         </figure>
