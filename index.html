@@ -194,6 +194,8 @@
     .rollout-tile { min-width: 0; margin: 0; }
     .rollout-tile video { display: block; width: 100%; aspect-ratio: 1; border: 1px solid #d9dde1; border-radius: 7px; background: #171a1d; }
     .rollout-tile figcaption { margin-top: .45rem; color: var(--ink); font-family: Arial, Helvetica, sans-serif; font-size: .88rem; font-weight: 700; text-align: center; }
+    .rollout-source-note { margin: .85rem 0 0; padding: .65rem .85rem; border-left: 3px solid #8c6a3e; border-radius: 3px; color: #5e4a30; background: #f7f2e9; font-size: .86rem; line-height: 1.5; }
+    .rollout-source-note[hidden] { display: none; }
     .rollout-controls { display: flex; align-items: center; gap: .75rem; margin-top: 1rem; }
 
     .results-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 1rem; }
@@ -452,6 +454,7 @@
             <figure class="rollout-tile"><video id="rolloutLeWAM" muted playsinline preload="metadata" aria-label="LeWAM open-loop prediction"></video><figcaption id="rolloutLeWAMLabel">LeWAM prediction</figcaption></figure>
             <figure class="rollout-tile"><video id="rolloutLeWM" muted playsinline preload="metadata" aria-label="LeWM open-loop prediction"></video><figcaption id="rolloutLeWMLabel">LeWM prediction</figcaption></figure>
           </div>
+          <p class="rollout-source-note" id="rolloutSourceNote" hidden>The supplied LeWM Cube open-loop clips contain a visible first frame followed by black frames. This is present in the original video files, not caused by playback. The frame-reconstruction view remains available.</p>
           <div class="rollout-controls">
             <button class="rollout-play" type="button" id="rolloutPlay">Play all</button>
           </div>
@@ -594,6 +597,7 @@
         var reconstruction = document.getElementById('rolloutReconstruction');
         var goal = document.getElementById('rolloutGoal');
         var explanation = document.getElementById('rolloutExplanation');
+        var sourceNote = document.getElementById('rolloutSourceNote');
         var play = document.getElementById('rolloutPlay');
         var videos = [document.getElementById('rolloutGroundTruth'), document.getElementById('rolloutLeWAM'), document.getElementById('rolloutLeWM')];
         if (!task || !example || videos.some(function (video) { return !video; })) return;
@@ -621,6 +625,7 @@
           explanation.textContent = mode === 'preddec'
             ? 'The predictors start from observed initial frames and use the executed actions to imagine the rest of the sequence. They receive no later ground-truth images.'
             : 'Each model encodes and decodes every observed frame. These post-hoc decoders are for visualization only and are not used for control.';
+          sourceNote.hidden = task.value !== 'cube' || mode !== 'preddec';
         }
 
         function setMode(next) {
