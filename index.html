@@ -175,6 +175,27 @@
     .wf8-legend span { display: flex; align-items: center; gap: .55rem; color: #6f747a; font-size: .82rem; white-space: nowrap; }
     .wf8-legend .wf8-cap { width: 1.1rem; height: 1.1rem; }
 
+    .rollout-panel { margin: 1.5rem auto .75rem; padding: 1.35rem; border: 1px solid var(--rule); border-radius: 10px; background: #fafafa; }
+    .rollout-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: .7rem 1rem; margin-bottom: 1rem; }
+    .rollout-field { display: flex; flex-direction: column; gap: .25rem; color: var(--ink); font-size: .88rem; font-weight: 700; }
+    .rollout-field select { min-width: 8rem; padding: .5rem .65rem; border: 1px solid #c9ced3; border-radius: 6px; color: var(--ink); background: #fff; }
+    .rollout-view { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-left: auto; }
+    .rollout-view-label { margin-right: .25rem; color: var(--ink); font-size: .88rem; font-weight: 700; }
+    .rollout-view button, .rollout-play { padding: .52rem .78rem; border: 1px solid #bdc6ce; border-radius: 6px; color: var(--ink); background: #fff; cursor: pointer; font-size: .88rem; }
+    .rollout-view button[aria-pressed="true"] { border-color: var(--paper-blue); color: #fff; background: var(--paper-blue); }
+    .rollout-view button:focus-visible, .rollout-play:focus-visible, .rollout-field select:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .rollout-context { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .rollout-goal { display: flex; align-items: center; gap: .65rem; flex: 0 0 auto; }
+    .rollout-goal img { display: block; width: 4.2rem; height: 4.2rem; border: 1px solid #d9dde1; border-radius: 5px; object-fit: cover; }
+    .rollout-goal strong, .rollout-goal span { display: block; }
+    .rollout-goal span { color: #777; font-size: .8rem; }
+    .rollout-context p { margin: 0; padding-left: 1rem; border-left: 1px solid var(--rule); color: #61676b; font-size: .9rem; line-height: 1.5; }
+    .rollout-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    .rollout-tile { min-width: 0; margin: 0; }
+    .rollout-tile video { display: block; width: 100%; aspect-ratio: 1; border: 1px solid #d9dde1; border-radius: 7px; background: #171a1d; }
+    .rollout-tile figcaption { margin-top: .45rem; color: var(--ink); font-family: Arial, Helvetica, sans-serif; font-size: .88rem; font-weight: 700; text-align: center; }
+    .rollout-controls { display: flex; align-items: center; gap: .75rem; margin-top: 1rem; }
+
     .results-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 1rem; }
     .results-grid .figure { margin: 0; }
     .paper-table-wrap { overflow-x: auto; margin: 1.25rem 0; }
@@ -221,6 +242,7 @@
       .figure--attention { width: min(100%, 27rem); }
       .wf8-legend { gap: .5rem .9rem; }
       .wf8-legend span { gap: .25rem; font-size: .72rem; }
+      .rollout-view { margin-left: 0; }
     }
     @media (max-width: 640px) {
       .container { width: min(100% - 28px, var(--max-width)); }
@@ -233,6 +255,11 @@
       .wf8-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem .8rem; }
       .wf8-figure, .figure--ninety { width: 100%; }
       .wf8-legend { justify-content: center; gap: .45rem .75rem; }
+      .rollout-panel { padding: .8rem; }
+      .rollout-context { align-items: start; flex-direction: column; }
+      .rollout-context p { padding-left: 0; border-left: 0; }
+      .rollout-grid { grid-template-columns: 1fr; }
+      .rollout-tile { width: min(100%, 22rem); margin-inline: auto; }
       .robot-box { grid-template-columns: 1fr; }
       .trajectory-grid { gap: .45rem; }
       .trajectory-grid figcaption { font-size: .85rem; }
@@ -347,7 +374,7 @@
           <figcaption class="figure-caption"><strong>Ten simulated tasks.</strong> The symbols under each task mark overlapping attributes, as in the paper.</figcaption>
         </figure>
         <h3 class="subsection-title">Example task rollouts</h3>
-        <p class="narrow video-intro">Eight of the ten tasks have short rollout videos below. Scene and Puzzle appear in the overview above but have no video here. The symbols under each video identify task attributes.</p>
+        <p class="narrow video-intro">Eight tasks have short rollout videos below. Scene and Puzzle appear in the overview and in the detailed model comparisons further down this page. The symbols under each video identify task attributes.</p>
         <figure class="wf8-figure" aria-label="Eight simulated task rollouts">
           <div class="wf8-layout">
             <div class="wf8-grid" id="wf8Grid" aria-label="Eight trajectory videos"></div>
@@ -383,6 +410,53 @@
           </table>
         </div>
         <p class="figure-caption">Each method uses the observation setup specified in the paper. The averages summarize three goal-free behavior-cloning tasks and are separate from goal-reaching planning.</p>
+      </div>
+    </section>
+
+    <section class="section" id="model-rollouts">
+      <div class="container">
+        <h2 class="section-title">Policy Rollouts and Model Visualizations</h2>
+        <div class="narrow content">
+          <p>These four tasks show actual closed-loop LeWAM policy executions, including object contact and multi-object scenes. Choose one of three examples per task to compare the recorded simulator frames with visualizations from LeWAM and LeWM.</p>
+          <p>Both models visualize <strong>the same executed actions</strong>; the LeWM column is not a separate LeWM policy rollout. The diagnostic decoders were trained only to render latent states and are not part of either controller. These clips are qualitative examples, not success-rate estimates.</p>
+        </div>
+        <div class="rollout-panel">
+          <div class="rollout-toolbar">
+            <label class="rollout-field" for="rolloutTask">Task
+              <select id="rolloutTask">
+                <option value="pusht">Push-T</option>
+                <option value="cube">Cube</option>
+                <option value="scene">Scene</option>
+                <option value="puzzle">Puzzle</option>
+              </select>
+            </label>
+            <label class="rollout-field" for="rolloutExample">Example
+              <select id="rolloutExample">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </label>
+            <div class="rollout-view" aria-label="Visualization type">
+              <span class="rollout-view-label">View</span>
+              <button type="button" id="rolloutPrediction" aria-pressed="true">Open-loop prediction</button>
+              <button type="button" id="rolloutReconstruction" aria-pressed="false">Frame reconstruction</button>
+            </div>
+          </div>
+          <div class="rollout-context">
+            <div class="rollout-goal"><img id="rolloutGoal" width="224" height="224" alt="Goal frame for selected example"><div><strong>Goal frame</strong><span>25 steps ahead</span></div></div>
+            <p id="rolloutExplanation">The predictors start from observed initial frames and use the executed actions to imagine the rest of the sequence. They receive no later ground-truth images.</p>
+          </div>
+          <div class="rollout-grid" aria-label="Synchronized rollout comparison">
+            <figure class="rollout-tile"><video id="rolloutGroundTruth" muted playsinline preload="metadata" aria-label="Recorded policy rollout"></video><figcaption>Recorded rollout</figcaption></figure>
+            <figure class="rollout-tile"><video id="rolloutLeWAM" muted playsinline preload="metadata" aria-label="LeWAM open-loop prediction"></video><figcaption id="rolloutLeWAMLabel">LeWAM prediction</figcaption></figure>
+            <figure class="rollout-tile"><video id="rolloutLeWM" muted playsinline preload="metadata" aria-label="LeWM open-loop prediction"></video><figcaption id="rolloutLeWMLabel">LeWM prediction</figcaption></figure>
+          </div>
+          <div class="rollout-controls">
+            <button class="rollout-play" type="button" id="rolloutPlay">Play all</button>
+          </div>
+        </div>
+        <p class="figure-caption"><strong>How to read the comparison.</strong> Open-loop predictions use initial frames and the recorded action sequence; frame reconstructions decode each observed frame. All clips are 5.1 seconds at 10 frames per second. Use the shared play control to compare aligned frames.</p>
       </div>
     </section>
 
@@ -512,6 +586,78 @@
       }
 
       renderWorldForge();
+
+      function renderModelRollouts() {
+        var task = document.getElementById('rolloutTask');
+        var example = document.getElementById('rolloutExample');
+        var prediction = document.getElementById('rolloutPrediction');
+        var reconstruction = document.getElementById('rolloutReconstruction');
+        var goal = document.getElementById('rolloutGoal');
+        var explanation = document.getElementById('rolloutExplanation');
+        var play = document.getElementById('rolloutPlay');
+        var videos = [document.getElementById('rolloutGroundTruth'), document.getElementById('rolloutLeWAM'), document.getElementById('rolloutLeWM')];
+        if (!task || !example || videos.some(function (video) { return !video; })) return;
+        var mode = 'preddec';
+
+        function pauseAll() {
+          videos.forEach(function (video) { video.pause(); });
+          play.textContent = 'Play all';
+        }
+
+        function loadSelection() {
+          pauseAll();
+          var root = 'static/videos/model_rollouts/' + task.value + '/' + example.value + '/';
+          var names = ['gt', 'lewam_' + mode, 'lewm_' + mode];
+          videos.forEach(function (video, index) {
+            video.src = root + names[index] + '.mp4';
+            video.load();
+          });
+          goal.src = 'static/images/model_rollouts/' + task.value + '/' + example.value + '/goal.png';
+          goal.alt = 'Goal frame for ' + task.options[task.selectedIndex].text + ', example ' + example.value;
+          document.getElementById('rolloutLeWAMLabel').textContent = mode === 'preddec' ? 'LeWAM prediction' : 'LeWAM reconstruction';
+          document.getElementById('rolloutLeWMLabel').textContent = mode === 'preddec' ? 'LeWM prediction' : 'LeWM reconstruction';
+          videos[1].setAttribute('aria-label', document.getElementById('rolloutLeWAMLabel').textContent);
+          videos[2].setAttribute('aria-label', document.getElementById('rolloutLeWMLabel').textContent);
+          explanation.textContent = mode === 'preddec'
+            ? 'The predictors start from observed initial frames and use the executed actions to imagine the rest of the sequence. They receive no later ground-truth images.'
+            : 'Each model encodes and decodes every observed frame. These post-hoc decoders are for visualization only and are not used for control.';
+        }
+
+        function setMode(next) {
+          mode = next;
+          prediction.setAttribute('aria-pressed', String(mode === 'preddec'));
+          reconstruction.setAttribute('aria-pressed', String(mode === 'encdec'));
+          loadSelection();
+        }
+
+        task.addEventListener('change', function () { example.value = '1'; loadSelection(); });
+        example.addEventListener('change', loadSelection);
+        prediction.addEventListener('click', function () { setMode('preddec'); });
+        reconstruction.addEventListener('click', function () { setMode('encdec'); });
+        play.addEventListener('click', function () {
+          if (!videos[0].paused) { pauseAll(); return; }
+          if (videos[0].ended) videos.forEach(function (video) { video.currentTime = 0; });
+          Promise.all(videos.map(function (video) { return video.play(); }))
+            .then(function () { play.textContent = 'Pause all'; })
+            .catch(pauseAll);
+        });
+        videos[0].addEventListener('timeupdate', function () {
+          var position = videos[0].currentTime;
+          videos.slice(1).forEach(function (video) {
+            if (Math.abs(video.currentTime - position) > .18) video.currentTime = position;
+          });
+        });
+        videos[0].addEventListener('ended', function () { pauseAll(); play.textContent = 'Replay all'; });
+        if ('IntersectionObserver' in window) {
+          var observer = new IntersectionObserver(function (entries) {
+            if (!entries[0].isIntersecting) pauseAll();
+          }, { threshold: .05 });
+          observer.observe(document.querySelector('.rollout-panel'));
+        }
+        loadSelection();
+      }
+
+      renderModelRollouts();
     }());
   </script>
 </body>
