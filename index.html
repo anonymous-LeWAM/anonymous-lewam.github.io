@@ -201,6 +201,9 @@
     .rollout-view button { padding: .52rem .78rem; border: 1px solid #bdc6ce; border-radius: 6px; color: var(--ink); background: #fff; cursor: pointer; font-size: .88rem; }
     .rollout-view button[aria-pressed="true"] { border-color: var(--paper-blue); color: #fff; background: var(--paper-blue); }
     .rollout-view button:focus-visible, .rollout-field select:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .rollout-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.3rem 1.1rem; }
+    .rollout-card { min-width: 0; margin: 0; }
+    .rollout-card figcaption { margin-top: .45rem; color: var(--ink); font-size: 1.05rem; font-weight: 700; text-align: center; }
     .rollout-film { width: min(100%, 840px); margin: 0 auto; overflow: hidden; border: 1px solid #d9dde1; border-radius: 7px; background: #171a1d; }
     .rollout-film-labels { display: grid; grid-template-columns: repeat(3, 1fr); color: #fff; background: #171a1d; font: 700 .8rem Arial, Helvetica, sans-serif; text-align: center; }
     .rollout-film-labels span { padding: .38rem .15rem; }
@@ -252,6 +255,10 @@
       .wf8-legend { gap: .5rem .9rem; }
       .wf8-legend span { gap: .25rem; font-size: .72rem; }
       .rollout-view { margin-left: 0; }
+    }
+    @media (max-width: 760px) {
+      .rollout-grid { grid-template-columns: 1fr; }
+      .rollout-card { width: min(100%, 34rem); margin-inline: auto; }
     }
     @media (max-width: 640px) {
       .container { width: min(100% - 28px, var(--max-width)); }
@@ -425,17 +432,8 @@
     <section class="section" id="model-rollouts">
       <div class="container">
         <h2 class="section-title">Policy Rollouts and Model Visualizations</h2>
-        <p class="section-lede">One rollout, three aligned views.</p>
         <div class="rollout-panel">
           <div class="rollout-toolbar">
-            <label class="rollout-field" for="rolloutTask">Task
-              <select id="rolloutTask">
-                <option value="pusht">Push-T</option>
-                <option value="cube">Cube</option>
-                <option value="scene">Scene</option>
-                <option value="puzzle">Puzzle</option>
-              </select>
-            </label>
             <label class="rollout-field" for="rolloutExample">Example
               <select id="rolloutExample">
                 <option value="1">1</option>
@@ -449,9 +447,23 @@
               <button type="button" id="rolloutReconstruction" aria-label="Frame reconstruction" aria-pressed="false" title="Frame reconstruction">Reconstruction</button>
             </div>
           </div>
-          <div class="rollout-film" aria-label="Synchronized rollout comparison">
-            <div class="rollout-film-labels" aria-hidden="true"><span>Recorded</span><span>LeWAM</span><span>LeWM</span></div>
-            <video id="rolloutComparison" width="672" height="224" autoplay muted loop playsinline preload="metadata" aria-label="Recorded rollout, LeWAM, and LeWM comparison"></video>
+          <div class="rollout-grid" aria-label="Synchronized rollout comparisons">
+            <figure class="rollout-card" data-task="pusht">
+              <div class="rollout-film"><div class="rollout-film-labels" aria-hidden="true"><span>Recorded</span><span>LeWAM</span><span>LeWM</span></div><video width="672" height="224" autoplay muted loop playsinline preload="metadata" aria-label="Push-T comparison"></video></div>
+              <figcaption>Push-T</figcaption>
+            </figure>
+            <figure class="rollout-card" data-task="cube">
+              <div class="rollout-film"><div class="rollout-film-labels" aria-hidden="true"><span>Recorded</span><span>LeWAM</span><span>LeWM</span></div><video width="672" height="224" autoplay muted loop playsinline preload="metadata" aria-label="Cube comparison"></video></div>
+              <figcaption>Cube</figcaption>
+            </figure>
+            <figure class="rollout-card" data-task="scene">
+              <div class="rollout-film"><div class="rollout-film-labels" aria-hidden="true"><span>Recorded</span><span>LeWAM</span><span>LeWM</span></div><video width="672" height="224" autoplay muted loop playsinline preload="metadata" aria-label="Scene comparison"></video></div>
+              <figcaption>Scene</figcaption>
+            </figure>
+            <figure class="rollout-card" data-task="puzzle">
+              <div class="rollout-film"><div class="rollout-film-labels" aria-hidden="true"><span>Recorded</span><span>LeWAM</span><span>LeWM</span></div><video width="672" height="224" autoplay muted loop playsinline preload="metadata" aria-label="Puzzle comparison"></video></div>
+              <figcaption>Puzzle</figcaption>
+            </figure>
           </div>
         </div>
         <details class="detail-panel"><summary>How to read these videos</summary><div class="detail-panel-body">
@@ -585,24 +597,26 @@
       renderWorldForge();
 
       function renderModelRollouts() {
-        var task = document.getElementById('rolloutTask');
         var example = document.getElementById('rolloutExample');
         var prediction = document.getElementById('rolloutPrediction');
         var reconstruction = document.getElementById('rolloutReconstruction');
-        var video = document.getElementById('rolloutComparison');
-        if (!task || !example || !video) return;
+        var cards = Array.prototype.slice.call(document.querySelectorAll('.rollout-card'));
+        if (!example || cards.length !== 4) return;
         var mode = 'preddec';
 
         function loadSelection() {
-          video.pause();
-          var root = 'static/videos/model_rollouts/' + task.value + '/' + example.value + '/';
-          video.poster = 'static/images/model_rollouts/' + task.value + '/' + example.value + '/comparison_' + mode + '.png';
-          video.src = root + 'comparison_' + mode + '.mp4';
-          video.setAttribute('aria-label', task.options[task.selectedIndex].text + ' example ' + example.value + ': recorded rollout, LeWAM, and LeWM ' + (mode === 'preddec' ? 'open-loop prediction' : 'frame reconstruction'));
-          video.load();
-          if (video.getBoundingClientRect().top < window.innerHeight && video.getBoundingClientRect().bottom > 0) {
-            video.play().catch(function () {});
-          }
+          cards.forEach(function (card) {
+            var task = card.getAttribute('data-task');
+            var video = card.querySelector('video');
+            var root = 'static/videos/model_rollouts/' + task + '/' + example.value + '/';
+            video.pause();
+            video.poster = 'static/images/model_rollouts/' + task + '/' + example.value + '/comparison_' + mode + '.png';
+            video.src = root + 'comparison_' + mode + '.mp4';
+            video.setAttribute('aria-label', card.querySelector('figcaption').textContent + ' example ' + example.value + ': recorded rollout, LeWAM, and LeWM ' + (mode === 'preddec' ? 'open-loop prediction' : 'frame reconstruction'));
+            video.load();
+            var bounds = video.getBoundingClientRect();
+            if (bounds.top < window.innerHeight && bounds.bottom > 0) video.play().catch(function () {});
+          });
         }
 
         function setMode(next) {
@@ -612,17 +626,18 @@
           loadSelection();
         }
 
-        task.addEventListener('change', function () { example.value = '1'; loadSelection(); });
         example.addEventListener('change', loadSelection);
         prediction.addEventListener('click', function () { setMode('preddec'); });
         reconstruction.addEventListener('click', function () { setMode('encdec'); });
         loadSelection();
         if ('IntersectionObserver' in window) {
           var observer = new IntersectionObserver(function (entries) {
-            if (entries[0].isIntersecting) video.play().catch(function () {});
-            else video.pause();
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) entry.target.play().catch(function () {});
+              else entry.target.pause();
+            });
           }, { rootMargin: '120px 0px', threshold: .05 });
-          observer.observe(video);
+          cards.forEach(function (card) { observer.observe(card.querySelector('video')); });
         }
       }
 
