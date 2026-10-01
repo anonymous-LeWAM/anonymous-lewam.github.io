@@ -198,20 +198,14 @@
     .rollout-field select { min-width: 8rem; padding: .5rem .65rem; border: 1px solid #c9ced3; border-radius: 6px; color: var(--ink); background: #fff; }
     .rollout-view { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-left: auto; }
     .rollout-view-label { margin-right: .25rem; color: var(--ink); font-size: .88rem; font-weight: 700; }
-    .rollout-view button, .rollout-play { padding: .52rem .78rem; border: 1px solid #bdc6ce; border-radius: 6px; color: var(--ink); background: #fff; cursor: pointer; font-size: .88rem; }
+    .rollout-view button { padding: .52rem .78rem; border: 1px solid #bdc6ce; border-radius: 6px; color: var(--ink); background: #fff; cursor: pointer; font-size: .88rem; }
     .rollout-view button[aria-pressed="true"] { border-color: var(--paper-blue); color: #fff; background: var(--paper-blue); }
-    .rollout-view button:focus-visible, .rollout-play:focus-visible, .rollout-field select:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
-    .rollout-context { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-    .rollout-goal { display: flex; align-items: center; gap: .65rem; flex: 0 0 auto; }
-    .rollout-goal img { display: block; width: 4.2rem; height: 4.2rem; border: 1px solid #d9dde1; border-radius: 5px; object-fit: cover; }
-    .rollout-goal strong, .rollout-goal span { display: block; }
-    .rollout-goal span { color: #777; font-size: .8rem; }
-    .rollout-context p { margin: 0; padding-left: 1rem; border-left: 1px solid var(--rule); color: #61676b; font-size: .9rem; line-height: 1.5; }
-    .rollout-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-    .rollout-tile { min-width: 0; margin: 0; }
-    .rollout-tile video { display: block; width: 100%; aspect-ratio: 1; border: 1px solid #d9dde1; border-radius: 7px; background: #171a1d; }
-    .rollout-tile figcaption { margin-top: .45rem; color: var(--ink); font-family: Arial, Helvetica, sans-serif; font-size: .88rem; font-weight: 700; text-align: center; }
-    .rollout-controls { display: flex; align-items: center; gap: .75rem; margin-top: 1rem; }
+    .rollout-view button:focus-visible, .rollout-field select:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .rollout-film { width: min(100%, 840px); margin: 0 auto; overflow: hidden; border: 1px solid #d9dde1; border-radius: 7px; background: #171a1d; }
+    .rollout-film-labels { display: grid; grid-template-columns: repeat(3, 1fr); color: #fff; background: #171a1d; font: 700 .8rem Arial, Helvetica, sans-serif; text-align: center; }
+    .rollout-film-labels span { padding: .38rem .15rem; }
+    .rollout-film-labels span + span { border-left: 1px solid #53575a; }
+    .rollout-film video { display: block; width: 100%; height: auto; aspect-ratio: 3; background: #171a1d; }
 
     .results-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 1rem; }
     .results-grid .figure { margin: 0; }
@@ -276,10 +270,7 @@
       .wf8-figure, .figure--ninety { width: 100%; }
       .wf8-legend { justify-content: center; gap: .45rem .75rem; }
       .rollout-panel { padding: .8rem; }
-      .rollout-context { align-items: start; flex-direction: column; }
-      .rollout-context p { padding-left: 0; border-left: 0; }
-      .rollout-grid { grid-template-columns: 1fr; }
-      .rollout-tile { width: min(100%, 22rem); margin-inline: auto; }
+      .rollout-film-labels { font-size: .68rem; }
       .robot-box { grid-template-columns: 1fr; }
       .trajectory-grid { gap: .45rem; }
       .trajectory-grid figcaption { font-size: .85rem; }
@@ -434,7 +425,7 @@
     <section class="section" id="model-rollouts">
       <div class="container">
         <h2 class="section-title">Policy Rollouts and Model Visualizations</h2>
-        <p class="section-lede">Recorded LeWAM policy · both models visualize the same executed actions.</p>
+        <p class="section-lede">One rollout, three aligned views.</p>
         <div class="rollout-panel">
           <div class="rollout-toolbar">
             <label class="rollout-field" for="rolloutTask">Task
@@ -458,23 +449,15 @@
               <button type="button" id="rolloutReconstruction" aria-label="Frame reconstruction" aria-pressed="false" title="Frame reconstruction">Reconstruction</button>
             </div>
           </div>
-          <div class="rollout-context">
-            <div class="rollout-goal"><img id="rolloutGoal" width="224" height="224" alt="Goal frame for selected example"><div><strong>Goal frame</strong><span>25 steps ahead</span></div></div>
-            <p id="rolloutExplanation">Open-loop: initial frames + executed actions; no later images.</p>
-          </div>
-          <div class="rollout-grid" aria-label="Synchronized rollout comparison">
-            <figure class="rollout-tile"><video id="rolloutGroundTruth" muted playsinline preload="metadata" aria-label="Recorded policy rollout"></video><figcaption>Recorded rollout</figcaption></figure>
-            <figure class="rollout-tile"><video id="rolloutLeWAM" muted playsinline preload="metadata" aria-label="LeWAM open-loop prediction"></video><figcaption id="rolloutLeWAMLabel">LeWAM prediction</figcaption></figure>
-            <figure class="rollout-tile"><video id="rolloutLeWM" muted playsinline preload="metadata" aria-label="LeWM open-loop prediction"></video><figcaption id="rolloutLeWMLabel">LeWM prediction</figcaption></figure>
-          </div>
-          <div class="rollout-controls">
-            <button class="rollout-play" type="button" id="rolloutPlay">Play all</button>
+          <div class="rollout-film" aria-label="Synchronized rollout comparison">
+            <div class="rollout-film-labels" aria-hidden="true"><span>Recorded</span><span>LeWAM</span><span>LeWM</span></div>
+            <video id="rolloutComparison" width="672" height="224" autoplay muted loop playsinline preload="metadata" aria-label="Recorded rollout, LeWAM, and LeWM comparison"></video>
           </div>
         </div>
         <details class="detail-panel"><summary>How to read these videos</summary><div class="detail-panel-body">
           <p>The recorded rollout is an actual closed-loop LeWAM policy execution. Both model columns visualize its executed action sequence; the LeWM column is not a separate LeWM policy rollout.</p>
           <p>Open-loop prediction starts from initial frames and receives no later ground-truth images. Frame reconstruction encodes and decodes each observed frame. These post-hoc decoders are for visualization only, not control.</p>
-          <p>Clips are frame-aligned at 10 fps for 5.1 seconds. They are qualitative examples, not success-rate estimates.</p>
+          <p>The policy's goal frame is 25 steps ahead. Clips are frame-aligned at 10 fps for 5.1 seconds. They are qualitative examples, not success-rate estimates.</p>
         </div></details>
       </div>
     </section>
@@ -606,35 +589,20 @@
         var example = document.getElementById('rolloutExample');
         var prediction = document.getElementById('rolloutPrediction');
         var reconstruction = document.getElementById('rolloutReconstruction');
-        var goal = document.getElementById('rolloutGoal');
-        var explanation = document.getElementById('rolloutExplanation');
-        var play = document.getElementById('rolloutPlay');
-        var videos = [document.getElementById('rolloutGroundTruth'), document.getElementById('rolloutLeWAM'), document.getElementById('rolloutLeWM')];
-        if (!task || !example || videos.some(function (video) { return !video; })) return;
+        var video = document.getElementById('rolloutComparison');
+        if (!task || !example || !video) return;
         var mode = 'preddec';
 
-        function pauseAll() {
-          videos.forEach(function (video) { video.pause(); });
-          play.textContent = 'Play all';
-        }
-
         function loadSelection() {
-          pauseAll();
+          video.pause();
           var root = 'static/videos/model_rollouts/' + task.value + '/' + example.value + '/';
-          var names = ['gt', 'lewam_' + mode, 'lewm_' + mode];
-          videos.forEach(function (video, index) {
-            video.src = root + names[index] + '.mp4' + (task.value === 'cube' ? '?v=cube-fixed-20260930' : '');
-            video.load();
-          });
-          goal.src = 'static/images/model_rollouts/' + task.value + '/' + example.value + '/goal.png';
-          goal.alt = 'Goal frame for ' + task.options[task.selectedIndex].text + ', example ' + example.value;
-          document.getElementById('rolloutLeWAMLabel').textContent = mode === 'preddec' ? 'LeWAM prediction' : 'LeWAM reconstruction';
-          document.getElementById('rolloutLeWMLabel').textContent = mode === 'preddec' ? 'LeWM prediction' : 'LeWM reconstruction';
-          videos[1].setAttribute('aria-label', document.getElementById('rolloutLeWAMLabel').textContent);
-          videos[2].setAttribute('aria-label', document.getElementById('rolloutLeWMLabel').textContent);
-          explanation.textContent = mode === 'preddec'
-            ? 'Open-loop: initial frames + executed actions; no later images.'
-            : 'Reconstruction: each observed frame is encoded and decoded.';
+          video.poster = 'static/images/model_rollouts/' + task.value + '/' + example.value + '/comparison_' + mode + '.png';
+          video.src = root + 'comparison_' + mode + '.mp4';
+          video.setAttribute('aria-label', task.options[task.selectedIndex].text + ' example ' + example.value + ': recorded rollout, LeWAM, and LeWM ' + (mode === 'preddec' ? 'open-loop prediction' : 'frame reconstruction'));
+          video.load();
+          if (video.getBoundingClientRect().top < window.innerHeight && video.getBoundingClientRect().bottom > 0) {
+            video.play().catch(function () {});
+          }
         }
 
         function setMode(next) {
@@ -648,27 +616,14 @@
         example.addEventListener('change', loadSelection);
         prediction.addEventListener('click', function () { setMode('preddec'); });
         reconstruction.addEventListener('click', function () { setMode('encdec'); });
-        play.addEventListener('click', function () {
-          if (!videos[0].paused) { pauseAll(); return; }
-          if (videos[0].ended) videos.forEach(function (video) { video.currentTime = 0; });
-          Promise.all(videos.map(function (video) { return video.play(); }))
-            .then(function () { play.textContent = 'Pause all'; })
-            .catch(pauseAll);
-        });
-        videos[0].addEventListener('timeupdate', function () {
-          var position = videos[0].currentTime;
-          videos.slice(1).forEach(function (video) {
-            if (Math.abs(video.currentTime - position) > .18) video.currentTime = position;
-          });
-        });
-        videos[0].addEventListener('ended', function () { pauseAll(); play.textContent = 'Replay all'; });
+        loadSelection();
         if ('IntersectionObserver' in window) {
           var observer = new IntersectionObserver(function (entries) {
-            if (!entries[0].isIntersecting) pauseAll();
-          }, { threshold: .05 });
-          observer.observe(document.querySelector('.rollout-panel'));
+            if (entries[0].isIntersecting) video.play().catch(function () {});
+            else video.pause();
+          }, { rootMargin: '120px 0px', threshold: .05 });
+          observer.observe(video);
         }
-        loadSelection();
       }
 
       renderModelRollouts();
