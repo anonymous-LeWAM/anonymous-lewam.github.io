@@ -97,6 +97,7 @@
       background: #fff;
     }
     .media-frame img { display: block; width: 100%; height: auto; }
+    .media-frame video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #fbfcfd; }
     .teaser .media-frame { border-color: #c8c8c8; }
 
     h2.section-title {
@@ -325,9 +326,11 @@
     <section class="teaser" aria-label="LeWAM overview">
       <div class="container">
         <figure class="media-frame">
-          <img width="2400" height="624" src="static/images/paper/lewam_method_overview.png" alt="LeWAM learns latent dynamics and stochastic actions with a shared MoT predictor and SIGReg">
+          <video width="1280" height="720" autoplay muted loop playsinline controls preload="metadata" poster="static/images/paper/lewam_teaser_poster.png" aria-label="LeWAM teaser: joint latent-state and action prediction, direct control, planning, and results">
+            <source src="static/videos/lewam_teaser.mp4" type="video/mp4">
+          </video>
         </figure>
-        <p class="figure-caption"><strong>One shared predictor.</strong> Joint latent-state and action prediction, with SIGReg.</p>
+        <p class="figure-caption"><strong>One model for prediction and control.</strong></p>
         <figure class="figure">
           <img width="2400" height="772" src="static/images/paper/lewam_results_overview.png" loading="lazy" alt="Contact-rich and 100-step goal reaching, planning speed, and robot inference compute efficiency">
           <figcaption class="figure-caption"><strong>Results at a glance.</strong> Goal reaching, planning speed, and robot inference compute.</figcaption>
