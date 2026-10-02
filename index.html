@@ -166,7 +166,10 @@
     }
     .figure-caption strong { color: var(--ink); }
     /* Match each figure's share of the manuscript text width. */
-    .figure--attention { width: min(44%, 27rem); }
+    .figure--attention { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: center; gap: clamp(1.4rem, 4vw, 3rem); width: 90%; }
+    .figure--attention > img { grid-column: 2; grid-row: 1; max-width: 27rem; margin: 0 auto; }
+    .figure--attention .figure-caption { grid-column: 1; grid-row: 1; width: auto; margin: 0; padding-left: 1.1rem; border-left: 2px solid var(--paper-blue); font-size: 1rem; }
+    .figure--attention .figure-caption strong { display: block; margin-bottom: .3rem; font-size: 1.17rem; }
     .figure--ninety { width: 90%; }
 
     .video-intro { margin: 0 auto 1rem; line-height: 1.5; text-align: center; }
@@ -254,7 +257,6 @@
       .wf8-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 800px) {
-      .figure--attention { width: min(100%, 27rem); }
       .wf8-legend { gap: .5rem .9rem; }
       .wf8-legend span { gap: .25rem; font-size: .72rem; }
       .rollout-view { margin-left: 0; }
@@ -286,6 +288,11 @@
       .trajectory-grid figcaption { font-size: .85rem; }
       .figure-caption { font-size: .86rem; }
       .content p { text-align: left; }
+    }
+    @media (max-width: 680px) {
+      .figure--attention { grid-template-columns: 1fr; gap: .8rem; width: min(100%, 27rem); }
+      .figure--attention > img, .figure--attention .figure-caption { grid-column: 1; grid-row: auto; }
+      .figure--attention .figure-caption { padding-left: .9rem; }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -352,7 +359,7 @@
         <p class="section-lede">A shared predictor learns dynamics and a stochastic policy from the same visual representation.</p>
         <figure class="figure figure--attention">
           <img width="2400" height="1924" src="static/images/paper/lewam_attention.png" loading="lazy" alt="Grouped MoT attention mask separating history, clean actions, state queries, and causal action-flow queries">
-          <figcaption class="figure-caption"><strong>Masked attention.</strong> Separate paths for dynamics and action queries.</figcaption>
+          <figcaption class="figure-caption"><strong>Separate information paths within one predictor.</strong> Masked attention prevents future-target leakage while sharing learned structure between dynamics and action modeling.</figcaption>
         </figure>
         <figure class="figure">
           <img width="2400" height="666" src="static/images/paper/lewam_three_consequences.png" loading="lazy" alt="LeWAM combines control-relevant representation learning, reconstruction-free prediction, and policy-guided gradient planning">
