@@ -172,7 +172,7 @@
     .video-intro { margin: 0 auto 1rem; line-height: 1.5; text-align: center; }
     .wf8-figure { width: 90%; margin: 1rem auto 2.5rem; font-family: Arial, Helvetica, sans-serif; }
     .wf8-layout { display: flex; flex-direction: column; align-items: center; gap: 1.05rem; }
-    .wf8-grid { display: grid; width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: .9rem; row-gap: 1.35rem; }
+    .wf8-grid { display: grid; width: 100%; grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: .9rem; row-gap: 1.35rem; }
     .wf8-tile { min-width: 0; text-align: center; }
     .wf8-video {
       display: block;
@@ -250,6 +250,9 @@
     .footer { padding: 1rem 0 2.5rem; text-align: center; }
     .footer p { margin: 0; color: #888; font-size: .88rem; }
 
+    @media (max-width: 900px) {
+      .wf8-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
     @media (max-width: 800px) {
       .figure--attention { width: min(100%, 27rem); }
       .wf8-legend { gap: .5rem .9rem; }
@@ -393,10 +396,10 @@
           <figcaption class="figure-caption"><strong>Task suite.</strong> Symbols mark shared task attributes.</figcaption>
         </figure>
         <h3 class="subsection-title">Example task rollouts</h3>
-        <p class="narrow video-intro">Eight representative policy rollouts.</p>
-        <figure class="wf8-figure" aria-label="Eight simulated task rollouts">
+        <p class="narrow video-intro">Ten representative task trajectories.</p>
+        <figure class="wf8-figure" aria-label="Ten simulated task rollouts">
           <div class="wf8-layout">
-            <div class="wf8-grid" id="wf8Grid" aria-label="Eight trajectory videos"></div>
+            <div class="wf8-grid" id="wf8Grid" aria-label="Ten trajectory videos"></div>
             <aside class="wf8-legend" id="wf8Legend" aria-label="Task attribute legend"></aside>
           </div>
           <figcaption class="figure-caption">Qualitative examples; measured success rates appear below.</figcaption>
@@ -546,8 +549,10 @@
         { name:'Two-Room', video:'tworoom', poster:'tworoom', caps:['navigation'] },
         { name:'Reacher', video:'reacher', poster:'reacher', caps:['precision'] },
         { name:'Push-T', video:'pusht', poster:'pusht', caps:['navigation','precision'] },
-        { name:'PointMaze-Large', video:'pointmaze_large_ep0911_224x224', poster:'pointmaze_large_ep0911', caps:['navigation','long_horizon'] },
         { name:'Cube', video:'cube', poster:'cube', caps:['contact'] },
+        { name:'PointMaze-Large', video:'pointmaze_large_ep0911_224x224', poster:'pointmaze_large_ep0911', caps:['navigation','long_horizon'] },
+        { name:'Scene', video:'scene', poster:'scene', caps:['contact','long_horizon'] },
+        { name:'Puzzle', video:'puzzle', poster:'puzzle', caps:['contact','precision'] },
         { name:'ToolHang', video:'toolhang', poster:'tool_hang', caps:['contact','precision','long_horizon'] },
         { name:'Transport', video:'transport', poster:'transport', caps:['contact','dexterous','long_horizon'] },
         { name:'DrawerCleanup', video:'drawer', poster:'drawer_cleanup', caps:['contact','dexterous','long_horizon'] }
