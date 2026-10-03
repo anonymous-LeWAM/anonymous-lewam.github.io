@@ -120,6 +120,7 @@
     .abstract-card { width: min(680px, 100%); margin: 0 auto; padding: 32px 40px; border-radius: 8px; background: #f8f8f8; }
     .abstract-copy { margin: 0; color: var(--body); font-size: 1.05rem; line-height: 1.65; text-align: justify; }
     .paper-first-page { padding-top: .5rem; }
+    .paper-first-page .detail-panel { margin: 0 auto 1rem; }
     .paper-first-page .figure { margin-top: 0; }
     .paper-figure-rule { height: 1px; margin: .45rem 0 .6rem; background: #d8dcdf; }
     .section-lede { width: min(700px, 100%); margin: 0 auto 1.15rem; color: #667078; font-size: 1rem; line-height: 1.5; text-align: center; }
@@ -311,6 +312,12 @@
 
     <section class="section paper-first-page" aria-label="Figure 1 from the paper">
       <div class="container">
+        <details class="detail-panel"><summary>Architecture details</summary><div class="detail-panel-body">
+          <p>History, future, and goal images share an encoder. A mixture of transformers (MoT) uses separate state and action transformations with masked attention. In simulation, the encoder and predictor train jointly from scratch with a 192-dimensional latent state.</p>
+          <p>Clean actions condition future-state prediction; noisy actions learn a velocity field through flow matching. SIGReg regularizes the latent distribution.</p>
+          <div class="formula" aria-label="Training loss equals dynamics loss plus action loss plus weighted SIGReg loss">ℒ<sub>LeWAM</sub> = ℒ<sub>dyn</sub> + ℒ<sub>act</sub> + λ<sub>sig</sub> ℒ<sub>SIGReg</sub></div>
+          <p>The state query reads history and clean actions. Goal and remaining-horizon conditioning enter the action readout only, so dynamics stay goal-independent. The physical-robot study also evaluates a frozen pretrained visual backbone; models are trained separately for each task and embodiment.</p>
+        </div></details>
         <figure class="figure">
           <img width="2400" height="624" src="static/images/paper/lewam_method_overview.png" loading="lazy" alt="LeWAM trains image and action streams together through a shared predictor with state and action prediction objectives">
           <div class="paper-figure-rule" aria-hidden="true"></div>
@@ -332,12 +339,6 @@
           <img width="2400" height="666" src="static/images/paper/lewam_three_consequences.png" loading="lazy" alt="LeWAM combines control-relevant representation learning, reconstruction-free prediction, and policy-guided gradient planning">
           <figcaption class="figure-caption"><strong>System comparison.</strong> Representation, prediction, and planning.</figcaption>
         </figure>
-        <details class="detail-panel"><summary>Architecture details</summary><div class="detail-panel-body">
-          <p>History, future, and goal images share an encoder. A mixture of transformers (MoT) uses separate state and action transformations with masked attention. In simulation, the encoder and predictor train jointly from scratch with a 192-dimensional latent state.</p>
-          <p>Clean actions condition future-state prediction; noisy actions learn a velocity field through flow matching. SIGReg regularizes the latent distribution.</p>
-          <div class="formula" aria-label="Training loss equals dynamics loss plus action loss plus weighted SIGReg loss">ℒ<sub>LeWAM</sub> = ℒ<sub>dyn</sub> + ℒ<sub>act</sub> + λ<sub>sig</sub> ℒ<sub>SIGReg</sub></div>
-          <p>The state query reads history and clean actions. Goal and remaining-horizon conditioning enter the action readout only, so dynamics stay goal-independent. The physical-robot study also evaluates a frozen pretrained visual backbone; models are trained separately for each task and embodiment.</p>
-        </div></details>
       </div>
     </section>
 
