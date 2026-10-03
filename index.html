@@ -157,6 +157,11 @@
       text-align: left;
     }
     .figure-caption strong { color: var(--ink); }
+    .bar-reveal { position: relative; }
+    .bar-reveal > img { display: block; width: 100%; height: auto; }
+    .bar-reveal-video { display: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
+    .bar-reveal.is-ready .bar-reveal-video { display: block; }
+    .bar-reveal.is-complete .bar-reveal-video { display: none; }
     /* Keep the attention diagram and caption inside the shared page column. */
     .figure--attention { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: center; gap: clamp(1.4rem, 4vw, 3rem); width: 100%; }
     .figure--attention > img { grid-column: 2; grid-row: 1; max-width: 27rem; margin: 0 auto; }
@@ -366,7 +371,12 @@
 
         <h3 class="subsection-title">25-step goal reaching</h3>
         <figure class="figure">
-          <img width="2400" height="1127" src="static/images/paper/sr_short_horizon.png" loading="lazy" alt="Short-horizon visual goal-reaching success rates across ten simulated tasks">
+          <div class="bar-reveal" id="shortHorizonReveal">
+            <img width="2400" height="1127" src="static/images/paper/sr_short_horizon.png" alt="Short-horizon visual goal-reaching success rates across ten simulated tasks">
+            <video class="bar-reveal-video" width="1200" height="564" muted playsinline preload="auto" poster="static/images/paper/sr_short_horizon_start.png" aria-hidden="true" tabindex="-1">
+              <source src="static/videos/paper/sr_short_horizon_reveal.mp4" type="video/mp4">
+            </video>
+          </div>
           <figcaption class="figure-caption">50-action budget · 10 tasks · mean success: <strong>91.9% LeWAM</strong> vs 46.9% LeWM (CEM).</figcaption>
         </figure>
 
@@ -530,6 +540,27 @@
       }
 
       renderWorldForge();
+
+      function revealShortHorizonBars() {
+        var chart = document.getElementById('shortHorizonReveal');
+        if (!chart || !('IntersectionObserver' in window)) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var video = chart.querySelector('video');
+        var started = false;
+        function finish() { chart.classList.add('is-complete'); }
+        video.addEventListener('ended', finish, { once: true });
+        video.addEventListener('error', finish, { once: true });
+        var observer = new IntersectionObserver(function (entries) {
+          if (started || !entries.some(function (entry) { return entry.isIntersecting; })) return;
+          started = true;
+          observer.disconnect();
+          video.play().catch(finish);
+        }, { threshold: .25 });
+        chart.classList.add('is-ready');
+        observer.observe(chart);
+      }
+
+      revealShortHorizonBars();
 
       function renderModelRollouts() {
         var example = document.getElementById('rolloutExample');
