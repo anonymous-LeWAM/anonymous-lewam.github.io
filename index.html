@@ -333,14 +333,13 @@
 
     <section class="section" id="planning">
       <div class="container">
-        <h2 class="section-title">Direct Control and Planning</h2>
-        <p class="section-lede">Act with the policy, or sample and refine plans through the learned dynamics.</p>
+        <h2 class="section-title">Planning with LeWAM</h2>
+        <p class="section-lede">Sample and refine plans through learned latent dynamics.</p>
         <figure class="figure">
           <img width="2400" height="626" src="static/images/paper/lewam_planning.png" loading="lazy" alt="Autoregressive action and latent rollouts followed by candidate refinement using dynamics gradients">
           <figcaption class="figure-caption"><strong>Planning loop.</strong> Sample → imagine → refine → execute.</figcaption>
         </figure>
-        <details class="detail-panel"><summary>Control and planning details</summary><div class="detail-panel-body">
-          <p><strong>Direct control.</strong> The action flow generates a 2K-action chunk; execute its first K actions, observe again, and repeat.</p>
+        <details class="detail-panel"><summary>Planning details</summary><div class="detail-panel-body">
           <ol>
             <li><strong>Sample plans.</strong> Alternate stochastic action generation with latent dynamics rollouts.</li>
             <li><strong>Refine and select.</strong> Optimize candidates through the frozen dynamics using terminal latent goal error and a proximity penalty; choose the lowest-cost iterate.</li>
