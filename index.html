@@ -162,30 +162,27 @@
     .figure--attention > img { grid-column: 2; grid-row: 1; max-width: 27rem; margin: 0 auto; }
     .figure--attention .figure-caption { grid-column: 1; grid-row: 1; width: auto; margin: 0; padding-left: 1.1rem; border-left: 2px solid var(--paper-blue); font-size: 1rem; }
     .figure--attention .figure-caption strong { display: block; margin-bottom: .3rem; font-size: 1.17rem; }
-    .figure--ninety { width: 90%; }
 
-    .video-intro { margin: 0 auto 1rem; line-height: 1.5; text-align: center; }
-    .wf8-figure { width: 90%; margin: 1rem auto 2.5rem; font-family: Arial, Helvetica, sans-serif; }
-    .wf8-layout { display: flex; flex-direction: column; align-items: center; gap: 1.05rem; }
-    .wf8-grid { display: grid; width: 100%; grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: .9rem; row-gap: 1.35rem; }
+    .wf8-figure { width: 100%; margin: 1.3rem auto 2.5rem; font-family: Arial, Helvetica, sans-serif; }
+    .wf8-layout { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: 1rem; align-items: stretch; }
+    .wf8-grid { display: grid; min-width: 0; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.4rem .75rem; }
     .wf8-tile { min-width: 0; text-align: center; }
     .wf8-video {
       display: block;
       width: 100%;
       aspect-ratio: 1;
       object-fit: cover;
-      border: 1px solid #d9dde1;
-      border-radius: 9px;
+      border: 2px solid #4f7290;
+      border-radius: 6px;
       background: #fff;
-      box-shadow: 0 1px 5px rgba(30, 35, 40, .04);
     }
-    .wf8-name { display: block; margin-top: .38rem; color: #202124; font-size: .88rem; font-weight: 700; line-height: 1.15; }
-    .wf8-caps { min-height: 1.25rem; display: flex; justify-content: center; gap: .22rem; margin-top: .22rem; }
-    .wf8-cap { display: inline-block; width: 1.18rem; height: 1.18rem; flex: 0 0 auto; }
+    .wf8-name { display: block; margin-top: .28rem; color: #202124; font-size: .83rem; font-weight: 700; line-height: 1.15; }
+    .wf8-caps { min-height: 1.15rem; display: flex; justify-content: center; gap: .18rem; margin-top: .18rem; }
+    .wf8-cap { display: inline-block; width: 1.08rem; height: 1.08rem; flex: 0 0 auto; }
     .wf8-cap img { display: block; width: 100%; height: 100%; }
-    .wf8-legend { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .55rem 1.2rem; width: 100%; padding-top: .2rem; }
-    .wf8-legend span { display: flex; align-items: center; gap: .55rem; color: #6f747a; font-size: .82rem; white-space: nowrap; }
-    .wf8-legend .wf8-cap { width: 1.1rem; height: 1.1rem; }
+    .wf8-legend { display: flex; flex-direction: column; justify-content: space-around; min-width: 0; padding-right: .6rem; border-right: 1px dashed #aab0b4; }
+    .wf8-legend > span { display: flex; align-items: center; gap: .45rem; color: #4a4f52; font-size: .79rem; white-space: nowrap; }
+    .wf8-legend .wf8-cap { width: 1rem; height: 1rem; }
 
     .rollout-panel { margin: 1.5rem auto .75rem; padding: 1.35rem; border: 1px solid var(--rule); border-radius: 10px; background: #fafafa; }
     .rollout-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: .7rem 1rem; margin-bottom: 1rem; }
@@ -245,15 +242,16 @@
     .footer { padding: 1rem 0 2.5rem; text-align: center; }
     .footer p { margin: 0; color: #888; font-size: .88rem; }
 
-    @media (max-width: 900px) {
-      .wf8-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
     @media (max-width: 800px) {
-      .wf8-legend { gap: .5rem .9rem; }
-      .wf8-legend span { gap: .25rem; font-size: .72rem; }
+      .wf8-layout { grid-template-columns: 8.5rem minmax(0, 1fr); gap: .7rem; }
+      .wf8-legend > span { gap: .25rem; font-size: .72rem; }
+      .wf8-name { font-size: .76rem; }
       .rollout-view { margin-left: 0; }
     }
     @media (max-width: 760px) {
+      .wf8-layout { grid-template-columns: 1fr; gap: .9rem; }
+      .wf8-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.15rem .8rem; }
+      .wf8-legend { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: .4rem .8rem; padding: 0 0 .7rem; border-right: 0; border-bottom: 1px dashed #aab0b4; }
       .rollout-grid { grid-template-columns: 1fr; }
       .rollout-card { width: min(100%, 34rem); margin-inline: auto; }
     }
@@ -266,9 +264,7 @@
       .abstract-section { padding-bottom: 1rem; }
       .abstract-copy { font-size: 1rem; }
       h2.section-title { font-size: 1.75rem; }
-      .wf8-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem .8rem; }
-      .wf8-figure, .figure--ninety { width: 100%; }
-      .wf8-legend { justify-content: center; gap: .45rem .75rem; }
+      .wf8-name { font-size: .88rem; }
       .rollout-panel { padding: .8rem; }
       .rollout-film-labels { font-size: .68rem; }
       .robot-box { grid-template-columns: 1fr; }
@@ -281,6 +277,9 @@
       .figure--attention { grid-template-columns: 1fr; gap: .8rem; width: min(100%, 27rem); }
       .figure--attention > img, .figure--attention .figure-caption { grid-column: 1; grid-row: auto; }
       .figure--attention .figure-caption { padding-left: .9rem; }
+    }
+    @media (max-width: 520px) {
+      .wf8-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -384,18 +383,12 @@
       <div class="container">
         <h2 class="section-title">Simulation Experiments</h2>
         <p class="section-lede">Ten tasks, from navigation to dexterous manipulation.</p>
-        <figure class="figure figure--ninety">
-          <img width="2400" height="950" src="static/images/paper/worldforge10_overview.png" loading="lazy" alt="Overview of the ten simulated tasks, including Scene and Puzzle">
-          <figcaption class="figure-caption"><strong>Task suite.</strong> Symbols mark shared task attributes.</figcaption>
-        </figure>
-        <h3 class="subsection-title">Example task rollouts</h3>
-        <p class="narrow video-intro">Ten representative task trajectories.</p>
-        <figure class="wf8-figure" aria-label="Ten simulated task rollouts">
+        <figure class="wf8-figure" aria-label="Ten simulated tasks with representative trajectories">
           <div class="wf8-layout">
-            <div class="wf8-grid" id="wf8Grid" aria-label="Ten trajectory videos"></div>
             <aside class="wf8-legend" id="wf8Legend" aria-label="Task attribute legend"></aside>
+            <div class="wf8-grid" id="wf8Grid" aria-label="Ten trajectory videos"></div>
           </div>
-          <figcaption class="figure-caption">Qualitative examples; measured success rates appear below.</figcaption>
+          <figcaption class="figure-caption"><strong>Ten tasks in motion.</strong> Representative trajectories; icons mark task attributes.</figcaption>
         </figure>
 
         <h3 class="subsection-title">25-step goal reaching</h3>
@@ -552,7 +545,7 @@
       ];
       var capabilityLabels = [
         ['navigation','Navigation'], ['contact','Contact-rich'], ['dexterous','Dexterous'],
-        ['precision','Precision'], ['long_horizon','Long-horizon']
+        ['precision','Precision'], ['long_horizon','Long tasks']
       ];
       var iconTitles = {
         navigation:'Navigation', contact:'Contact-rich', dexterous:'Dexterous',
