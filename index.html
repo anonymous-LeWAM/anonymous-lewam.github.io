@@ -164,26 +164,20 @@
     .figure--attention .figure-caption { grid-column: 1; grid-row: 1; width: auto; margin: 0; padding-left: 1.1rem; border-left: 2px solid var(--paper-blue); font-size: 1rem; }
     .figure--attention .figure-caption strong { display: block; margin-bottom: .3rem; font-size: 1.17rem; }
 
-    .wf8-figure { width: 100%; margin: 1.3rem auto 2.5rem; font-family: Arial, Helvetica, sans-serif; }
-    .wf8-layout { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: 1rem; align-items: stretch; }
-    .wf8-grid { display: grid; min-width: 0; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.4rem .75rem; }
-    .wf8-tile { min-width: 0; text-align: center; }
+    .wf8-figure { width: 100%; margin: 1.3rem auto 2.5rem; }
+    .wf8-paper-scroll { overflow-x: auto; }
+    .wf8-paper { position: relative; width: 100%; min-width: 820px; aspect-ratio: 2577 / 1019; }
+    .wf8-paper-base { display: block; width: 100%; height: 100%; }
+    .wf8-grid { position: absolute; inset: 0; }
     .wf8-video {
+      position: absolute;
       display: block;
-      width: 100%;
-      aspect-ratio: 1;
+      width: 13.333333%;
+      height: 33.263158%;
       object-fit: cover;
-      border: 2px solid #4f7290;
-      border-radius: 6px;
+      border-radius: 2px;
       background: #fff;
     }
-    .wf8-name { display: block; margin-top: .28rem; color: #202124; font-size: .83rem; font-weight: 700; line-height: 1.15; }
-    .wf8-caps { min-height: 1.15rem; display: flex; justify-content: center; gap: .18rem; margin-top: .18rem; }
-    .wf8-cap { display: inline-block; width: 1.08rem; height: 1.08rem; flex: 0 0 auto; }
-    .wf8-cap img { display: block; width: 100%; height: 100%; }
-    .wf8-legend { display: flex; flex-direction: column; justify-content: space-around; min-width: 0; padding-right: .6rem; border-right: 1px dashed #aab0b4; }
-    .wf8-legend > span { display: flex; align-items: center; gap: .45rem; color: #4a4f52; font-size: .79rem; white-space: nowrap; }
-    .wf8-legend .wf8-cap { width: 1rem; height: 1rem; }
 
     .rollout-panel { margin: 1.5rem auto .75rem; padding: 1.35rem; border: 1px solid var(--rule); border-radius: 10px; background: #fafafa; }
     .rollout-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: .7rem 1rem; margin-bottom: 1rem; }
@@ -241,15 +235,9 @@
       line-height: 1.6;
     }
     @media (max-width: 800px) {
-      .wf8-layout { grid-template-columns: 8.5rem minmax(0, 1fr); gap: .7rem; }
-      .wf8-legend > span { gap: .25rem; font-size: .72rem; }
-      .wf8-name { font-size: .76rem; }
       .rollout-view { margin-left: 0; }
     }
     @media (max-width: 760px) {
-      .wf8-layout { grid-template-columns: 1fr; gap: .9rem; }
-      .wf8-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.15rem .8rem; }
-      .wf8-legend { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: .4rem .8rem; padding: 0 0 .7rem; border-right: 0; border-bottom: 1px dashed #aab0b4; }
       .rollout-grid { grid-template-columns: 1fr; }
       .rollout-card { width: min(100%, 34rem); margin-inline: auto; }
     }
@@ -262,7 +250,6 @@
       .abstract-section { padding-bottom: 1rem; }
       .abstract-copy { font-size: 1rem; }
       h2.section-title { font-size: 1.75rem; }
-      .wf8-name { font-size: .88rem; }
       .rollout-panel { padding: .8rem; }
       .rollout-film-labels { font-size: .68rem; }
       .robot-box { grid-template-columns: 1fr; }
@@ -275,9 +262,6 @@
       .figure--attention { grid-template-columns: 1fr; gap: .8rem; width: min(100%, 27rem); }
       .figure--attention > img, .figure--attention .figure-caption { grid-column: 1; grid-row: auto; }
       .figure--attention .figure-caption { padding-left: .9rem; }
-    }
-    @media (max-width: 520px) {
-      .wf8-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -310,8 +294,8 @@
     <section class="teaser" aria-label="LeWAM overview">
       <div class="container">
         <figure class="media-frame">
-          <video width="1280" height="720" autoplay muted loop playsinline controls preload="metadata" poster="static/images/paper/lewam_teaser_v14.png" aria-label="LeWAM teaser: paper training and planning figures, videos of ten simulated environments, visual planning and ablation results, and physical-robot experiments in manuscript order">
-            <source src="static/videos/lewam_teaser_v14.mp4" type="video/mp4">
+          <video width="1280" height="720" autoplay muted loop playsinline controls preload="metadata" poster="static/images/paper/lewam_teaser_v15.png" aria-label="LeWAM teaser: paper training and planning figures, ten task videos inside the paper's simulation figure, visual planning and ablation results, and physical-robot experiments in manuscript order">
+            <source src="static/videos/lewam_teaser_v15.mp4" type="video/mp4">
           </video>
         </figure>
         <p class="figure-caption"><strong>A JEPA that predicts and acts.</strong> Ten tasks, planning, model analysis, and robot control.</p>
@@ -382,9 +366,11 @@
         <h2 class="section-title">Heterogeneous Simulated Environments</h2>
         <p class="section-lede">We evaluate control across ten simulated navigation and manipulation environments.</p>
         <figure class="wf8-figure" aria-label="Ten simulated tasks with representative trajectories">
-          <div class="wf8-layout">
-            <aside class="wf8-legend" id="wf8Legend" aria-label="Task attribute legend"></aside>
-            <div class="wf8-grid" id="wf8Grid" aria-label="Ten trajectory videos"></div>
+          <div class="wf8-paper-scroll">
+            <div class="wf8-paper">
+              <img class="wf8-paper-base" width="2577" height="1019" src="static/images/paper/worldforge10_overview.png" alt="Paper figure showing ten tasks in two rows, with the five task attributes in a legend on the left and attribute symbols beneath each task">
+              <div class="wf8-grid" id="wf8Grid" aria-label="Ten trajectory videos placed within the paper figure"></div>
+            </div>
           </div>
           <figcaption class="figure-caption"><strong>Simulation environments.</strong> Symbols beneath each frame denote overlapping task attributes, with their meanings shown in the legend to the left.</figcaption>
         </figure>
@@ -524,45 +510,29 @@
   <script>
     (function () {
       var tasks = [
-        { name:'Two-Room', video:'tworoom', poster:'tworoom', caps:['navigation'] },
-        { name:'Reacher', video:'reacher', poster:'reacher', caps:['precision'] },
-        { name:'Push-T', video:'pusht', poster:'pusht', caps:['navigation','precision'] },
-        { name:'Cube', video:'cube', poster:'cube', caps:['contact'] },
-        { name:'PointMaze-Large', video:'pointmaze_large_ep0911_224x224', poster:'pointmaze_large_ep0911', caps:['navigation','long_horizon'] },
-        { name:'Scene', video:'scene', poster:'scene', caps:['contact','long_horizon'] },
-        { name:'Puzzle', video:'puzzle', poster:'puzzle', caps:['contact','precision'] },
-        { name:'ToolHang', video:'toolhang', poster:'tool_hang', caps:['contact','precision','long_horizon'] },
-        { name:'Transport', video:'transport', poster:'transport', caps:['contact','dexterous','long_horizon'] },
-        { name:'DrawerCleanup', video:'drawer', poster:'drawer_cleanup', caps:['contact','dexterous','long_horizon'] }
+        { name:'Two-Room', video:'tworoom', poster:'tworoom' },
+        { name:'Reacher', video:'reacher', poster:'reacher' },
+        { name:'Push-T', video:'pusht', poster:'pusht' },
+        { name:'Cube', video:'cube', poster:'cube' },
+        { name:'PointMaze-Large', video:'pointmaze_large_ep0911_224x224', poster:'pointmaze_large_ep0911' },
+        { name:'Scene', video:'scene', poster:'scene' },
+        { name:'Puzzle', video:'puzzle', poster:'puzzle' },
+        { name:'ToolHang', video:'toolhang', poster:'tool_hang' },
+        { name:'Transport', video:'transport', poster:'transport' },
+        { name:'DrawerCleanup', video:'drawer', poster:'drawer_cleanup' }
       ];
-      var capabilityLabels = [
-        ['navigation','Navigation'], ['contact','Contact-rich'], ['dexterous','Dexterous'],
-        ['precision','Precision'], ['long_horizon','Long tasks']
-      ];
-      var iconTitles = {
-        navigation:'Navigation', contact:'Contact-rich', dexterous:'Dexterous',
-        precision:'Precision', long_horizon:'Long-horizon'
-      };
-
-      function icon(kind) {
-        return '<span class="wf8-cap" title="' + iconTitles[kind] + '"><img src="static/images/worldforge8/icons/' + kind + '.svg" alt=""></span>';
-      }
 
       function renderWorldForge() {
         var grid = document.getElementById('wf8Grid');
-        var legend = document.getElementById('wf8Legend');
-        if (!grid || !legend) return;
+        if (!grid) return;
 
-        grid.innerHTML = tasks.map(function (task) {
-          return '<div class="wf8-tile">' +
-            '<video class="wf8-video" autoplay muted loop playsinline preload="metadata" poster="static/images/worldforge8/' + task.poster + '.png" aria-label="' + task.name + ' trajectory">' +
-            '<source src="static/videos/worldforge8/' + task.video + '.mp4" type="video/mp4"></video>' +
-            '<span class="wf8-name">' + task.name + '</span>' +
-            '<span class="wf8-caps">' + task.caps.map(icon).join('') + '</span></div>';
-        }).join('');
-
-        legend.innerHTML = capabilityLabels.map(function (item) {
-          return '<span>' + icon(item[0]) + item[1] + '</span>';
+        // Interior frame positions measured against the current paper figure (2400 × 950).
+        var columns = [418, 828, 1238, 1647, 2057];
+        grid.innerHTML = tasks.map(function (task, index) {
+          var left = (columns[index % 5] / 2400 * 100).toFixed(6);
+          var top = ((index < 5 ? 32 : 516) / 950 * 100).toFixed(6);
+          return '<video class="wf8-video" style="left:' + left + '%;top:' + top + '%" autoplay muted loop playsinline preload="metadata" poster="static/images/worldforge8/' + task.poster + '.png" aria-label="' + task.name + ' trajectory">' +
+            '<source src="static/videos/worldforge8/' + task.video + '.mp4" type="video/mp4"></video>';
         }).join('');
 
         var videos = Array.prototype.slice.call(grid.querySelectorAll('video'));
