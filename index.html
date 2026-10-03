@@ -117,20 +117,11 @@
       font-weight: 700;
       line-height: 1.2;
     }
-    .abstract-box {
-      width: min(820px, 100%);
-      margin: 0 auto;
-      padding: 1.5rem;
-      border: 1px solid #e4e7e9;
-      border-radius: 10px;
-      background: #fbfcfc;
-    }
-    .overview-summary { max-width: 650px; margin: 0 auto 1.15rem; color: var(--ink); font-size: 1.12rem; line-height: 1.5; text-align: center; }
-    .overview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; }
-    .overview-item { padding: .85rem .55rem; border: 1px solid #e5e8ea; border-radius: 8px; background: #fff; text-align: center; }
-    .overview-item i { display: block; margin-bottom: .45rem; color: var(--paper-blue); font-size: 1.2rem; }
-    .overview-item strong { display: block; color: var(--ink); font-family: Arial, Helvetica, sans-serif; font-size: .9rem; line-height: 1.3; }
-    .overview-item span { display: block; margin-top: .2rem; color: #6d7378; font-family: Arial, Helvetica, sans-serif; font-size: .78rem; line-height: 1.35; }
+    .abstract-section { padding-bottom: 1.25rem; }
+    .abstract-copy { width: min(820px, 100%); margin: 0 auto; color: var(--body); font-size: 1.05rem; line-height: 1.65; }
+    .paper-first-page { padding-top: .5rem; }
+    .paper-first-page .figure { margin-top: 0; }
+    .paper-figure-rule { height: 1px; margin: .45rem 0 .6rem; background: #d8dcdf; }
     .section-lede { width: min(700px, 100%); margin: 0 auto 1.15rem; color: #667078; font-size: 1rem; line-height: 1.5; text-align: center; }
     .detail-panel { width: min(760px, 100%); margin: 1.25rem auto 1.8rem; border: 1px solid #e4e7e9; border-radius: 8px; background: #fbfcfc; }
     .detail-panel summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .7rem .9rem; color: var(--paper-blue); cursor: pointer; font-family: Arial, Helvetica, sans-serif; font-size: .86rem; font-weight: 700; list-style: none; }
@@ -272,12 +263,8 @@
       .publication-title { font-size: clamp(1rem, 4.2vw, 1.8rem); }
       .publication-authors { font-size: 1.05rem; }
       .section { padding-bottom: 2.4rem; }
-      .abstract-box { padding: 1.4rem 1.3rem; }
-      .overview-grid { grid-template-columns: 1fr; gap: .45rem; }
-      .overview-item { display: grid; grid-template-columns: 1.5rem 1fr; gap: .1rem .65rem; padding: .65rem .75rem; text-align: left; }
-      .overview-item i { grid-row: span 2; margin: .15rem 0 0; }
-      .overview-item span { margin-top: 0; }
-      .overview-summary { font-size: 1rem; }
+      .abstract-section { padding-bottom: 1rem; }
+      .abstract-copy { font-size: 1rem; }
       h2.section-title { font-size: 1.75rem; }
       .wf8-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem .8rem; }
       .wf8-figure, .figure--ninety { width: 100%; }
@@ -331,28 +318,24 @@
           </video>
         </figure>
         <p class="figure-caption"><strong>A JEPA that predicts and acts.</strong> Paper figures, ten task examples, and physical-robot evaluation.</p>
-        <figure class="figure">
-          <img width="2400" height="772" src="static/images/paper/lewam_results_overview.png" loading="lazy" alt="Contact-rich and 100-step goal reaching, planning speed, and robot inference compute efficiency">
-          <figcaption class="figure-caption"><strong>Results at a glance.</strong> Goal reaching, planning speed, and robot inference compute.</figcaption>
-        </figure>
       </div>
     </section>
 
-    <section class="section" id="abstract">
+    <section class="section abstract-section" id="abstract">
       <div class="container">
-        <h2 class="section-title">Overview</h2>
-        <div class="abstract-box">
-          <p class="overview-summary">LeWAM learns a world action model from pixels through joint prediction of latent states and actions.</p>
-          <div class="overview-grid" aria-label="LeWAM at a glance">
-            <div class="overview-item"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i><strong>Learn together</strong><span>Representation · dynamics · action</span></div>
-            <div class="overview-item"><i class="fa-solid fa-robot" aria-hidden="true"></i><strong>Act directly</strong><span>Stochastic action policy</span></div>
-            <div class="overview-item"><i class="fa-solid fa-route" aria-hidden="true"></i><strong>Plan in latent space</strong><span>Sample · refine · execute</span></div>
-          </div>
-        </div>
-        <details class="detail-panel"><summary>Overview details</summary><div class="detail-panel-body">
-          <p>JEPAs learn latent world models without pixel reconstruction. LeWAM trains representation, dynamics, and stochastic action modeling together with a shared predictor and SIGReg.</p>
-          <p>The model supports both direct policy execution and visual planning. In ten simulated tasks, contact-rich success is 85.5% versus 26.8%; at a 100-step goal offset it is 46.2% versus 10.9%. Planning is 32.3× faster than LeWM (CEM) across four tasks. Goal-free behavior cloning and physical-robot control are evaluated separately.</p>
-        </div></details>
+        <h2 class="section-title">Abstract</h2>
+        <p class="abstract-copy">Joint-embedding predictive architectures (JEPAs) learn compact latent world models without pixel reconstruction. However, existing JEPAs typically learn representations and dynamics independently of downstream control objectives, complicating the pipeline and leaving unexplored how world- and action- learning benefit each other. We introduce <strong>LeWAM</strong>, an end-to-end JEPA for control with: (1) a joint training objective over next latent state prediction and action flow matching, and (2) an isotropic Gaussian constraint on the latent state, enabling a single model to support direct policy execution and efficient planning by evaluating sampled actions with its learned latent dynamics. Compared with prior JEPAs in visual planning, LeWAM improves success rate from 26.8% to 85.5% on contact-rich tasks and from 10.9% to 46.2% on long-horizon tasks, and plans 32.3× faster. On behavior cloning tasks in simulation and physical robots, LeWAM is also competitive with established methods. Interpretability analyses show that LeWAM learns control-relevant representations and action distributions effectively guiding test-time planning and control.</p>
+      </div>
+    </section>
+
+    <section class="section paper-first-page" aria-label="Figure 1 from the paper">
+      <div class="container">
+        <figure class="figure">
+          <img width="2400" height="624" src="static/images/paper/lewam_method_overview.png" loading="lazy" alt="LeWAM trains image and action streams together through a shared predictor with state and action prediction objectives">
+          <div class="paper-figure-rule" aria-hidden="true"></div>
+          <img width="2400" height="772" src="static/images/paper/lewam_results_overview.png" loading="lazy" alt="Paper Figure 1 results: contact-rich and long-horizon success, planning speed, and robot inference compute efficiency">
+          <figcaption class="figure-caption"><strong>Figure 1.</strong> LeWAM training and results overview.</figcaption>
+        </figure>
       </div>
     </section>
 
