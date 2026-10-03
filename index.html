@@ -204,10 +204,6 @@
     .paper-table th { color: var(--ink); font-weight: 700; }
     .paper-table caption { padding-bottom: .6rem; text-align: left; color: var(--ink); }
     .paper-table td:not(:first-child) { white-space: nowrap; }
-    .trajectory-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-    .trajectory-grid figure { margin: 0; text-align: center; }
-    .trajectory-grid img { display: block; width: 100%; height: auto; }
-    .trajectory-grid figcaption { margin-top: .5rem; font-weight: 700; }
     .supplement { margin: 1.5rem 0 0; }
     .supplement summary { cursor: pointer; color: var(--link); font-weight: 700; }
 
@@ -254,8 +250,6 @@
       .rollout-panel { padding: .8rem; }
       .rollout-film-labels { font-size: .68rem; }
       .robot-box { grid-template-columns: 1fr; }
-      .trajectory-grid { gap: .45rem; }
-      .trajectory-grid figcaption { font-size: .85rem; }
       .figure-caption { font-size: .86rem; }
       .content p { text-align: left; }
     }
@@ -467,13 +461,6 @@
           <img width="2400" height="586" src="static/images/paper/model_ablations.png" loading="lazy" alt="Model ablations for representation regularization, encoder and action choices, and goal-free task completion">
           <figcaption class="figure-caption"><strong>Ablations.</strong> SIGReg, encoder, action model, and goal-free control.</figcaption>
         </figure>
-        <h3 class="subsection-title">Qualitative action distributions</h3>
-        <p class="section-lede">Two-door navigation: MSE favors the lower passage; flow matching samples both.</p>
-        <div class="trajectory-grid">
-          <figure><img width="2400" height="2400" src="static/images/paper/action_expert.png" loading="lazy" alt="Expert navigation trajectories using both doorways"><figcaption>Demonstrations</figcaption></figure>
-          <figure><img width="2400" height="2400" src="static/images/paper/action_mse.png" loading="lazy" alt="MSE action-head trajectories concentrated at the lower doorway"><figcaption>MSE action head</figcaption></figure>
-          <figure><img width="2400" height="2400" src="static/images/paper/action_flow.png" loading="lazy" alt="Flow-matching action-head trajectories using both doorways"><figcaption>Flow-matching action head</figcaption></figure>
-        </div>
       </div>
     </section>
 
