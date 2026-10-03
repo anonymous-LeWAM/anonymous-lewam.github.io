@@ -88,18 +88,16 @@
     .paper-button[aria-disabled="true"] { opacity: .62; cursor: default; }
     .paper-button:focus-visible, video:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
 
-    .teaser { padding: 1.25rem 0 1.5rem; }
-    .teaser .figure { margin-bottom: 0; }
+    .teaser { padding: 1.25rem 0 2rem; }
     .media-frame {
-      margin: 0;
+      width: 70%;
+      margin: 0 auto;
       overflow: hidden;
-      border: 1px solid #bbbbbb;
-      border-radius: 10px;
+      border: 1px solid #c4c6c8;
+      border-radius: 7px;
       background: #fff;
     }
     .media-frame img { display: block; width: 100%; height: auto; }
-    .media-frame video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #fbfcfd; }
-    .teaser .media-frame { border-color: #c8c8c8; }
 
     h2.section-title {
       margin: 0 0 1.25rem;
@@ -118,8 +116,9 @@
       font-weight: 700;
       line-height: 1.2;
     }
-    .abstract-section { padding-bottom: 1.25rem; }
-    .abstract-copy { width: min(820px, 100%); margin: 0 auto; color: var(--body); font-size: 1.05rem; line-height: 1.65; }
+    .abstract-section { padding: 0 0 2rem; }
+    .abstract-card { width: min(680px, 100%); margin: 0 auto; padding: 32px 40px; border-radius: 8px; background: #f8f8f8; }
+    .abstract-copy { margin: 0; color: var(--body); font-size: 1.05rem; line-height: 1.65; text-align: justify; }
     .paper-first-page { padding-top: .5rem; }
     .paper-first-page .figure { margin-top: 0; }
     .paper-figure-rule { height: 1px; margin: .45rem 0 .6rem; background: #d8dcdf; }
@@ -248,6 +247,8 @@
       .publication-authors { font-size: 1.05rem; }
       .section { padding-bottom: 2.4rem; }
       .abstract-section { padding-bottom: 1rem; }
+      .media-frame { width: 100%; }
+      .abstract-card { padding: 1.5rem; }
       .abstract-copy { font-size: 1rem; }
       h2.section-title { font-size: 1.75rem; }
       .rollout-panel { padding: .8rem; }
@@ -294,18 +295,17 @@
     <section class="teaser" aria-label="LeWAM overview">
       <div class="container">
         <figure class="media-frame">
-          <video width="1280" height="720" autoplay muted loop playsinline controls preload="metadata" poster="static/images/paper/lewam_teaser_v15.png" aria-label="LeWAM teaser: paper training and planning figures, ten task videos inside the paper's simulation figure, visual planning and ablation results, and physical-robot experiments in manuscript order">
-            <source src="static/videos/lewam_teaser_v15.mp4" type="video/mp4">
-          </video>
+          <img width="800" height="450" src="static/images/paper/lewam_teaser_v16.gif" alt="Animated LeWAM teaser showing the paper training and planning figures, ten tasks in the paper layout, experimental results, and physical-robot control">
         </figure>
-        <p class="figure-caption"><strong>A JEPA that predicts and acts.</strong> Ten tasks, planning, model analysis, and robot control.</p>
       </div>
     </section>
 
     <section class="section abstract-section" id="abstract">
       <div class="container">
-        <h2 class="section-title">Abstract</h2>
-        <p class="abstract-copy">Joint-embedding predictive architectures (JEPAs) learn compact latent world models without pixel reconstruction. However, existing JEPAs typically learn representations and dynamics independently of downstream control objectives, complicating the pipeline and leaving unexplored how world- and action- learning benefit each other. We introduce <strong>LeWAM</strong>, an end-to-end JEPA for control with: (1) a joint training objective over next latent state prediction and action flow matching, and (2) an isotropic Gaussian constraint on the latent state, enabling a single model to support direct policy execution and efficient planning by evaluating sampled actions with its learned latent dynamics. Compared with prior JEPAs in visual planning, LeWAM improves success rate from 26.8% to 85.5% on contact-rich tasks and from 10.9% to 46.2% on long-horizon tasks, and plans 32.3× faster. On behavior cloning tasks in simulation and physical robots, LeWAM is also competitive with established methods. Interpretability analyses show that LeWAM learns control-relevant representations and action distributions effectively guiding test-time planning and control.</p>
+        <div class="abstract-card">
+          <h2 class="section-title">Abstract</h2>
+          <p class="abstract-copy">Joint-embedding predictive architectures (JEPAs) learn compact latent world models without pixel reconstruction. However, existing JEPAs typically learn representations and dynamics independently of downstream control objectives, complicating the pipeline and leaving unexplored how world- and action- learning benefit each other. We introduce <strong>LeWAM</strong>, an end-to-end JEPA for control with: (1) a joint training objective over next latent state prediction and action flow matching, and (2) an isotropic Gaussian constraint on the latent state, enabling a single model to support direct policy execution and efficient planning by evaluating sampled actions with its learned latent dynamics. Compared with prior JEPAs in visual planning, LeWAM improves success rate from 26.8% to 85.5% on contact-rich tasks and from 10.9% to 46.2% on long-horizon tasks, and plans 32.3× faster. On behavior cloning tasks in simulation and physical robots, LeWAM is also competitive with established methods. Interpretability analyses show that LeWAM learns control-relevant representations and action distributions effectively guiding test-time planning and control.</p>
+        </div>
       </div>
     </section>
 
