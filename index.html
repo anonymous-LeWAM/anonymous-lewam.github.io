@@ -187,15 +187,8 @@
       background: #fff;
     }
 
-    .rollout-panel { margin: 1.5rem auto .75rem; padding: 1.35rem; border: 1px solid var(--rule); border-radius: 10px; background: #fafafa; }
-    .rollout-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: .7rem 1rem; margin-bottom: 1rem; }
-    .rollout-field { display: flex; flex-direction: column; gap: .25rem; color: var(--ink); font-size: .88rem; font-weight: 700; }
-    .rollout-field select { min-width: 8rem; padding: .5rem .65rem; border: 1px solid #c9ced3; border-radius: 6px; color: var(--ink); background: #fff; }
-    .rollout-view { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-left: auto; }
-    .rollout-view-label { margin-right: .25rem; color: var(--ink); font-size: .88rem; font-weight: 700; }
-    .rollout-view button { padding: .52rem .78rem; border: 1px solid #bdc6ce; border-radius: 6px; color: var(--ink); background: #fff; cursor: pointer; font-size: .88rem; }
-    .rollout-view button[aria-pressed="true"] { border-color: var(--paper-blue); color: #fff; background: var(--paper-blue); }
-    .rollout-view button:focus-visible, .rollout-field select:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .rollout-panel { position: relative; margin: 1.5rem auto .75rem; padding: 1.35rem; border: 1px solid var(--rule); border-radius: 10px; background: #fafafa; }
+    .rollout-stage { display: grid; grid-template-columns: minmax(0, 1fr) 72px; align-items: center; gap: .8rem; }
     .rollout-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.3rem 1.1rem; }
     .rollout-card { min-width: 0; margin: 0; }
     .rollout-card figcaption { margin-top: .45rem; color: var(--ink); font-size: 1.05rem; font-weight: 700; text-align: center; }
@@ -204,6 +197,22 @@
     .rollout-film-labels span { padding: .38rem .15rem; }
     .rollout-film-labels span + span { border-left: 1px solid #53575a; }
     .rollout-film video { display: block; width: 100%; height: auto; aspect-ratio: 3; background: #171a1d; }
+    .rollout-wheel { position: relative; width: 70px; height: 70px; border-radius: 50%; cursor: grab; touch-action: none; user-select: none; }
+    .rollout-wheel:active { cursor: grabbing; }
+    .rollout-wheel:focus-visible { outline: 2px solid var(--link); outline-offset: 4px; }
+    .rollout-wheel-face { position: absolute; inset: 3px; border: 1px solid #cbd1d5; border-radius: 50%; background: repeating-conic-gradient(from -30deg, transparent 0deg 58deg, #fafafa 58deg 60deg), conic-gradient(from -30deg, #3c729f 0deg 180deg, #b87950 180deg 360deg); box-shadow: 0 2px 8px #18334820; transition: transform .25s ease-out; }
+    .rollout-wheel-face::after { position: absolute; inset: 14px; border-radius: 50%; background: #fafafa; box-shadow: inset 0 0 0 1px #d9dee1; content: ''; }
+    .rollout-wheel-front { position: absolute; z-index: 2; top: -5px; left: calc(50% - 5px); width: 0; height: 0; border-right: 5px solid transparent; border-left: 5px solid transparent; border-top: 8px solid var(--ink); pointer-events: none; }
+    .rollout-wheel-value { position: absolute; z-index: 1; inset: 0; display: grid; place-items: center; color: #3c729f; font: 700 1.2rem Arial, Helvetica, sans-serif; pointer-events: none; }
+    .rollout-wheel[data-mode="encdec"] .rollout-wheel-value { color: #b87950; }
+    .rollout-caption-toggle summary { position: absolute; top: .55rem; right: .6rem; display: grid; width: 30px; height: 30px; place-items: center; border-radius: 50%; color: var(--paper-blue); cursor: pointer; font: 400 1.35rem Arial, Helvetica, sans-serif; list-style: none; }
+    .rollout-caption-toggle summary::-webkit-details-marker { display: none; }
+    .rollout-caption-toggle summary::after { content: '+'; }
+    .rollout-caption-toggle[open] summary::after { content: '−'; }
+    .rollout-caption-toggle summary:hover { background: #edf0f2; }
+    .rollout-caption-toggle summary:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .rollout-caption-toggle .detail-panel-body { margin-top: 1.25rem; padding: .75rem 0 0; border-top: 1px solid var(--rule); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
     .results-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 1rem; }
     .results-grid .figure { margin: 0; }
@@ -238,12 +247,10 @@
       font-size: .82rem;
       line-height: 1.6;
     }
-    @media (max-width: 800px) {
-      .rollout-view { margin-left: 0; }
-    }
     @media (max-width: 760px) {
       .rollout-grid { grid-template-columns: 1fr; }
       .rollout-card { width: min(100%, 34rem); margin-inline: auto; }
+      .rollout-wheel { align-self: start; margin-top: 2rem; }
     }
     @media (max-width: 640px) {
       .container { width: min(100% - 28px, var(--max-width)); }
@@ -269,6 +276,7 @@
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
+      .rollout-wheel-face { transition: none; }
     }
   </style>
 </head>
@@ -407,21 +415,8 @@
       <div class="container">
         <h2 class="section-title">Visual Reconstructions and Action-Conditioned Rollouts</h2>
         <div class="rollout-panel">
-          <div class="rollout-toolbar">
-            <label class="rollout-field" for="rolloutExample">Example
-              <select id="rolloutExample">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-              </select>
-            </label>
-            <div class="rollout-view" aria-label="Visualization type">
-              <span class="rollout-view-label">View</span>
-              <button type="button" id="rolloutPrediction" aria-label="Open-loop prediction" aria-pressed="true" title="Open-loop prediction">Prediction</button>
-              <button type="button" id="rolloutReconstruction" aria-label="Frame reconstruction" aria-pressed="false" title="Frame reconstruction">Reconstruction</button>
-            </div>
-          </div>
-          <div class="rollout-grid" aria-label="Synchronized rollout comparisons">
+          <div class="rollout-stage">
+            <div class="rollout-grid" aria-label="Synchronized rollout comparisons">
             <figure class="rollout-card" data-task="pusht">
               <div class="rollout-film"><div class="rollout-film-labels" aria-hidden="true"><span>Recorded</span><span>LeWAM</span><span>LeWM</span></div><video width="672" height="224" autoplay muted loop playsinline preload="metadata" aria-label="Push-T comparison"></video></div>
               <figcaption>Push-T</figcaption>
@@ -438,13 +433,19 @@
               <div class="rollout-film"><div class="rollout-film-labels" aria-hidden="true"><span>Recorded</span><span>LeWAM</span><span>LeWM</span></div><video width="672" height="224" autoplay muted loop playsinline preload="metadata" aria-label="Puzzle comparison"></video></div>
               <figcaption>Puzzle</figcaption>
             </figure>
+            </div>
+            <div class="rollout-wheel" id="rolloutWheel" role="slider" tabindex="0" aria-label="Visualization" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1" aria-valuetext="Prediction, example 1" data-mode="preddec" title="Prediction, example 1">
+              <span class="rollout-wheel-face" aria-hidden="true"></span>
+              <span class="rollout-wheel-front" aria-hidden="true"></span>
+              <span class="rollout-wheel-value" aria-hidden="true">1</span>
+            </div>
           </div>
+          <details class="rollout-caption-toggle"><summary><span class="sr-only">How to read these videos</span></summary><div class="detail-panel-body">
+            <p>Recorded shows the executed LeWAM trajectory. Both model columns use its recorded actions as fixed inputs. Neither model generates new actions during these visualized rollouts.</p>
+            <p>Open-loop prediction starts from initial frames and receives no later ground-truth images. Frame reconstruction encodes and decodes each observed frame. These post-hoc decoders are for visualization only, not control.</p>
+            <p>The policy's goal frame is 25 steps ahead. Clips are frame-aligned at 10 fps for 5.1 seconds. They are qualitative examples, not success-rate estimates.</p>
+          </div></details>
         </div>
-        <details class="detail-panel"><summary>How to read these videos</summary><div class="detail-panel-body">
-          <p>Recorded shows the executed LeWAM trajectory. Both model columns use its recorded actions as fixed inputs. Neither model generates new actions during these visualized rollouts.</p>
-          <p>Open-loop prediction starts from initial frames and receives no later ground-truth images. Frame reconstruction encodes and decodes each observed frame. These post-hoc decoders are for visualization only, not control.</p>
-          <p>The policy's goal frame is 25 steps ahead. Clips are frame-aligned at 10 fps for 5.1 seconds. They are qualitative examples, not success-rate estimates.</p>
-        </div></details>
       </div>
     </section>
 
@@ -566,38 +567,91 @@
       revealPaperFigure('longHorizonReveal');
 
       function renderModelRollouts() {
-        var example = document.getElementById('rolloutExample');
-        var prediction = document.getElementById('rolloutPrediction');
-        var reconstruction = document.getElementById('rolloutReconstruction');
+        var wheel = document.getElementById('rolloutWheel');
         var cards = Array.prototype.slice.call(document.querySelectorAll('.rollout-card'));
-        if (!example || cards.length !== 4) return;
-        var mode = 'preddec';
+        if (!wheel || cards.length !== 4) return;
+        var face = wheel.querySelector('.rollout-wheel-face');
+        var value = wheel.querySelector('.rollout-wheel-value');
+        var position = 0;
+        var pointerStart = null;
+        var wheelDelta = 0;
+
+        function selectedIndex() { return ((position % 6) + 6) % 6; }
+
+        function pointerAngle(event) {
+          var bounds = wheel.getBoundingClientRect();
+          return Math.atan2(event.clientX - bounds.left - bounds.width / 2,
+                            bounds.top + bounds.height / 2 - event.clientY) * 180 / Math.PI;
+        }
+
+        function angleDifference(a, b) { return ((a - b + 540) % 360) - 180; }
 
         function loadSelection() {
+          var selected = selectedIndex();
+          var example = String(selected % 3 + 1);
+          var mode = selected < 3 ? 'preddec' : 'encdec';
+          var description = (mode === 'preddec' ? 'Prediction' : 'Reconstruction') + ', example ' + example;
+          face.style.transform = 'rotate(' + (-position * 60) + 'deg)';
+          value.textContent = example;
+          wheel.dataset.mode = mode;
+          wheel.setAttribute('aria-valuenow', String(selected + 1));
+          wheel.setAttribute('aria-valuetext', description);
+          wheel.title = description;
           cards.forEach(function (card) {
             var task = card.getAttribute('data-task');
             var video = card.querySelector('video');
-            var root = 'static/videos/model_rollouts/' + task + '/' + example.value + '/';
+            var root = 'static/videos/model_rollouts/' + task + '/' + example + '/';
             video.pause();
-            video.poster = 'static/images/model_rollouts/' + task + '/' + example.value + '/comparison_' + mode + '.png';
+            video.poster = 'static/images/model_rollouts/' + task + '/' + example + '/comparison_' + mode + '.png';
             video.src = root + 'comparison_' + mode + '.mp4';
-            video.setAttribute('aria-label', card.querySelector('figcaption').textContent + ' example ' + example.value + ': recorded trajectory, LeWAM, and LeWM ' + (mode === 'preddec' ? 'open-loop prediction' : 'frame reconstruction'));
+            video.setAttribute('aria-label', card.querySelector('figcaption').textContent + ' example ' + example + ': recorded trajectory, LeWAM, and LeWM ' + (mode === 'preddec' ? 'open-loop prediction' : 'frame reconstruction'));
             video.load();
             var bounds = video.getBoundingClientRect();
             if (bounds.top < window.innerHeight && bounds.bottom > 0) video.play().catch(function () {});
           });
         }
 
-        function setMode(next) {
-          mode = next;
-          prediction.setAttribute('aria-pressed', String(mode === 'preddec'));
-          reconstruction.setAttribute('aria-pressed', String(mode === 'encdec'));
+        function setPosition(next) {
+          if (next === position) return;
+          position = next;
           loadSelection();
         }
 
-        example.addEventListener('change', loadSelection);
-        prediction.addEventListener('click', function () { setMode('preddec'); });
-        reconstruction.addEventListener('click', function () { setMode('encdec'); });
+        wheel.addEventListener('wheel', function (event) {
+          event.preventDefault();
+          wheelDelta += event.deltaY;
+          if (Math.abs(wheelDelta) >= 35) {
+            setPosition(position + Math.sign(wheelDelta));
+            wheelDelta = 0;
+          }
+        }, { passive: false });
+        wheel.addEventListener('keydown', function (event) {
+          if (event.key === 'ArrowRight' || event.key === 'ArrowDown') setPosition(position + 1);
+          else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') setPosition(position - 1);
+          else if (event.key === 'Home') setPosition(position - selectedIndex());
+          else if (event.key === 'End') setPosition(position + 5 - selectedIndex());
+          else return;
+          event.preventDefault();
+        });
+        wheel.addEventListener('pointerdown', function (event) {
+          if (event.button !== 0) return;
+          pointerStart = { angle: pointerAngle(event), x: event.clientX, y: event.clientY, position: position };
+          wheel.setPointerCapture(event.pointerId);
+        });
+        wheel.addEventListener('pointermove', function (event) {
+          if (!pointerStart) return;
+          if (Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y) < 8) return;
+          setPosition(pointerStart.position - Math.round(angleDifference(pointerAngle(event), pointerStart.angle) / 60));
+        });
+        wheel.addEventListener('pointerup', function (event) {
+          if (!pointerStart) return;
+          if (Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y) < 8) {
+            var step = Math.round(((pointerAngle(event) % 360) + 360) % 360 / 60) % 6;
+            setPosition(position + step);
+          }
+          pointerStart = null;
+        });
+        wheel.addEventListener('pointercancel', function () { pointerStart = null; });
         loadSelection();
         if ('IntersectionObserver' in window) {
           var observer = new IntersectionObserver(function (entries) {
