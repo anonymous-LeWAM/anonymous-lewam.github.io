@@ -410,7 +410,7 @@
 
     <section class="section" id="model-rollouts">
       <div class="container">
-        <h2 class="section-title">Policy Rollouts and Model Visualizations</h2>
+        <h2 class="section-title">Visual Reconstructions and Action-Conditioned Rollouts</h2>
         <div class="rollout-panel">
           <div class="rollout-toolbar">
             <label class="rollout-field" for="rolloutExample">Example
@@ -446,7 +446,7 @@
           </div>
         </div>
         <details class="detail-panel"><summary>How to read these videos</summary><div class="detail-panel-body">
-          <p>The recorded rollout is an actual closed-loop LeWAM policy execution. Both model columns visualize its executed action sequence; the LeWM column is not a separate LeWM policy rollout.</p>
+          <p>Recorded shows the executed LeWAM trajectory. Both model columns use its recorded actions as fixed inputs. Neither model generates new actions during these visualized rollouts.</p>
           <p>Open-loop prediction starts from initial frames and receives no later ground-truth images. Frame reconstruction encodes and decodes each observed frame. These post-hoc decoders are for visualization only, not control.</p>
           <p>The policy's goal frame is 25 steps ahead. Clips are frame-aligned at 10 fps for 5.1 seconds. They are qualitative examples, not success-rate estimates.</p>
         </div></details>
@@ -586,7 +586,7 @@
             video.pause();
             video.poster = 'static/images/model_rollouts/' + task + '/' + example.value + '/comparison_' + mode + '.png';
             video.src = root + 'comparison_' + mode + '.mp4';
-            video.setAttribute('aria-label', card.querySelector('figcaption').textContent + ' example ' + example.value + ': recorded rollout, LeWAM, and LeWM ' + (mode === 'preddec' ? 'open-loop prediction' : 'frame reconstruction'));
+            video.setAttribute('aria-label', card.querySelector('figcaption').textContent + ' example ' + example.value + ': recorded trajectory, LeWAM, and LeWM ' + (mode === 'preddec' ? 'open-loop prediction' : 'frame reconstruction'));
             video.load();
             var bounds = video.getBoundingClientRect();
             if (bounds.top < window.innerHeight && bounds.bottom > 0) video.play().catch(function () {});
