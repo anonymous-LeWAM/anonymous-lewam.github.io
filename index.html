@@ -126,6 +126,7 @@
     .architecture-details h3 { margin: 0 0 .65rem; color: var(--paper-blue); font-family: Arial, Helvetica, sans-serif; font-size: .92rem; }
     .architecture-details p { margin: .6rem 0; }
     .architecture-details .formula { margin: .8rem 0; background: #fff; }
+    .architecture-details .model-interface { line-height: 1.8; }
     .section-lede { width: min(700px, 100%); margin: 0 auto 1.5rem; color: #667078; font-size: 1rem; line-height: 1.5; text-align: center; }
     .section-copy { width: 100%; margin: 1.25rem auto 1.8rem; color: var(--body); font-size: 1rem; line-height: 1.65; }
     .section-copy p { margin: .75rem 0; }
@@ -312,10 +313,16 @@
         <h2 class="section-title">Joint World- and Action- Learning</h2>
         <div class="architecture-details">
           <h3>Architecture details</h3>
-          <p>History, future, and goal images share an encoder. A mixture of transformers (MoT) uses separate state and action transformations with masked attention. In simulation, the encoder and predictor train jointly from scratch with a 192-dimensional latent state.</p>
-          <p>Clean actions condition future-state prediction; noisy actions learn a velocity field through flow matching. SIGReg regularizes the latent distribution.</p>
+          <p><strong>Model architecture.</strong> A shared encoder maps images to latent states. A mixture of transformers (MoT) predictor uses history latents to predict future states from clean actions and an action velocity field from noisy actions.</p>
+          <div class="formula model-interface" aria-label="The encoder maps an image to a latent state. The predictor's state branch predicts a future latent state, and its action branch predicts action velocities.">
+            <div><i>z</i><sub>t</sub> = Enc(<i>o</i><sub>t</sub>)</div>
+            <div><i>ẑ</i><sub>t+K</sub> = <i>f</i><sub>z</sub>(<i>q</i><sup>z</sup><sub>t+K</sub>; <i>z</i><sub>≤t</sub>, <i>A</i><sub>t,K</sub>)</div>
+            <div><i>v̂</i><sub>t,C</sub> = <i>f</i><sub>a</sub>(<i>A</i><sup>(s)</sup><sub>t,C</sub>; <i>s</i>, <i>z</i><sub>≤t</sub>, <i>c</i><sub>t</sub>)</div>
+          </div>
+          <p>Integrating the velocity field generates action chunks. Goal and horizon information condition only the action branch.</p>
+          <p><strong>Training objective.</strong> We jointly train the encoder and predictor with latent prediction, action flow matching, and SIGReg regularization.</p>
           <div class="formula" aria-label="Training loss equals dynamics loss plus action loss plus weighted SIGReg loss">ℒ<sub>LeWAM</sub> = ℒ<sub>dyn</sub> + ℒ<sub>act</sub> + λ<sub>sig</sub> ℒ<sub>SIGReg</sub></div>
-          <p>The state query reads history and clean actions. Goal and remaining-horizon conditioning enter the action readout only, so dynamics stay goal-independent. The physical-robot study also evaluates a frozen pretrained visual backbone; models are trained separately for each task and embodiment.</p>
+          <p>SIGReg encourages an isotropic Gaussian latent distribution.</p>
         </div>
         <figure class="figure figure--method">
           <img width="2400" height="624" src="static/images/paper/lewam_method_overview.png" loading="lazy" alt="LeWAM trains image and action streams together through a shared predictor with state and action prediction objectives">
