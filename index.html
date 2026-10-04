@@ -118,12 +118,14 @@
       line-height: 1.2;
     }
     .abstract-section { padding: 0 0 3rem; }
-    .abstract-section .container, .paper-first-page .container { max-width: var(--reading-width); }
+    .abstract-section .container, .methodology-section .container { max-width: var(--reading-width); }
     .abstract-card { width: 100%; margin: 0 auto; padding: 32px 40px; border-radius: 8px; background: #f8f8f8; }
     .abstract-copy { margin: 0; color: var(--body); font-size: 1rem; line-height: 1.7; text-align: justify; }
-    .paper-first-page .detail-panel { margin: 0 auto 1rem; }
-    .paper-first-page .figure { margin-top: 0; }
-    .paper-figure-rule { height: 1px; margin: .45rem 0 .6rem; background: #d8dcdf; }
+    .methodology-section .figure--method { margin: 1.5rem auto 2rem; }
+    .architecture-details { margin: 2rem auto 0; padding: 1rem 1.2rem; border-radius: 8px; background: var(--surface); color: #5f676e; font-size: .9rem; line-height: 1.6; }
+    .architecture-details h3 { margin: 0 0 .65rem; color: var(--paper-blue); font-family: Arial, Helvetica, sans-serif; font-size: .92rem; }
+    .architecture-details p { margin: .6rem 0; }
+    .architecture-details .formula { margin: .8rem 0; background: #fff; }
     .section-lede { width: min(700px, 100%); margin: 0 auto 1.5rem; color: #667078; font-size: 1rem; line-height: 1.5; text-align: center; }
     .detail-panel { width: 100%; margin: 1.25rem auto 1.8rem; border: 1px solid #e4e7e9; border-radius: 8px; background: #fbfcfc; }
     .detail-panel summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .7rem .9rem; color: var(--paper-blue); cursor: pointer; font-family: Arial, Helvetica, sans-serif; font-size: .86rem; font-weight: 700; list-style: none; }
@@ -165,8 +167,8 @@
     .paper-reveal.is-ready .paper-reveal-video { display: block; }
     .paper-reveal.is-complete .paper-reveal-video { display: none; }
     /* Keep the attention diagram and caption inside the shared page column. */
-    .figure--attention { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: center; gap: clamp(1.4rem, 4vw, 3rem); width: 100%; }
-    .figure--attention > img { grid-column: 2; grid-row: 1; max-width: 27rem; margin: 0 auto; }
+    .figure--attention { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .95fr); align-items: center; gap: clamp(1.2rem, 3vw, 2rem); width: 100%; }
+    .figure--attention > img { grid-column: 2; grid-row: 1; max-width: 19rem; margin: 0 auto; }
     .figure--attention .figure-caption { grid-column: 1; grid-row: 1; width: auto; margin: 0; padding-left: 1.1rem; border-left: 2px solid var(--paper-blue); font-size: 1rem; }
     .figure--attention .figure-caption strong { display: block; margin-bottom: .3rem; font-size: 1.17rem; }
 
@@ -310,27 +312,21 @@
       </div>
     </section>
 
-    <section class="section paper-first-page" aria-label="Figure 1 from the paper">
+    <section class="section methodology-section" id="approach">
       <div class="container">
-        <details class="detail-panel"><summary>Architecture details</summary><div class="detail-panel-body">
+        <h2 class="section-title">Joint World- and Action- Learning from Pixels</h2>
+        <p class="section-lede">A shared predictor learns dynamics and a stochastic policy from the same visual representation.</p>
+        <div class="architecture-details">
+          <h3>Architecture details</h3>
           <p>History, future, and goal images share an encoder. A mixture of transformers (MoT) uses separate state and action transformations with masked attention. In simulation, the encoder and predictor train jointly from scratch with a 192-dimensional latent state.</p>
           <p>Clean actions condition future-state prediction; noisy actions learn a velocity field through flow matching. SIGReg regularizes the latent distribution.</p>
           <div class="formula" aria-label="Training loss equals dynamics loss plus action loss plus weighted SIGReg loss">ℒ<sub>LeWAM</sub> = ℒ<sub>dyn</sub> + ℒ<sub>act</sub> + λ<sub>sig</sub> ℒ<sub>SIGReg</sub></div>
           <p>The state query reads history and clean actions. Goal and remaining-horizon conditioning enter the action readout only, so dynamics stay goal-independent. The physical-robot study also evaluates a frozen pretrained visual backbone; models are trained separately for each task and embodiment.</p>
-        </div></details>
-        <figure class="figure">
+        </div>
+        <figure class="figure figure--method">
           <img width="2400" height="624" src="static/images/paper/lewam_method_overview.png" loading="lazy" alt="LeWAM trains image and action streams together through a shared predictor with state and action prediction objectives">
-          <div class="paper-figure-rule" aria-hidden="true"></div>
-          <img width="2400" height="772" src="static/images/paper/lewam_results_overview.png" loading="lazy" alt="Paper Figure 1 results: contact-rich and long-horizon success, planning speed, and robot inference compute efficiency">
-          <figcaption class="figure-caption"><strong>Figure 1.</strong> LeWAM training and results overview.</figcaption>
+          <figcaption class="figure-caption"><strong>LeWAM training.</strong> Joint latent state prediction and action flow matching.</figcaption>
         </figure>
-      </div>
-    </section>
-
-    <section class="section" id="approach">
-      <div class="container">
-        <h2 class="section-title">Joint World- and Action- Learning from Pixels</h2>
-        <p class="section-lede">A shared predictor learns dynamics and a stochastic policy from the same visual representation.</p>
         <figure class="figure figure--attention">
           <img width="2400" height="1924" src="static/images/paper/lewam_attention.png" loading="lazy" alt="Grouped MoT attention mask separating history, clean actions, state queries, and causal action-flow queries">
           <figcaption class="figure-caption"><strong>Separate information paths within one predictor.</strong> Masked attention prevents future-target leakage while sharing learned structure between dynamics and action modeling.</figcaption>
